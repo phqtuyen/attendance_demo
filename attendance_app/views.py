@@ -2,6 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader, RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from .test import test_class
+from rest_framework import viewsets
+from .serializers import UserSerializer, GroupSerializer, CreateFormSerializer
+from django.contrib.auth.models import User, Group
 
 question_key = 'Question'
 #to be update using database
@@ -49,3 +53,33 @@ class AppViews:
 	def view(self,request):
 		return
 
+	def test_output(self,request):
+		ob = test_class()
+		return HttpResponse(ob.test_print())
+
+	print(response.getvalue())
+	return response	
+	
+class CreateForm(viewsets.ModelViewSet):
+    queryset = User.objects.all()[:1]
+    serializer_class = CreateFormSerializer
+
+class ConfirmForm(viewsets.ModelViewSet):
+	queryset = User.objects.all()[:1]
+	serializer_class = ConfirmFormSerializer	
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all().order_by('-date_joined')
+    serializer_class = UserSerializer
+
+
+class GroupViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint that allows groups to be viewed or edited.
+    """
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
