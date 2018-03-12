@@ -59,7 +59,16 @@ class AppViews:
 
 	print(response.getvalue())
 	return response	
+
+class ViewForm(viewsets.ModelViewSet):
+    queryset = User.objects.all()[:1]
+    serializer_class = ViewFormSerializer
+
+class ConfirmSubmitForm(viewsets.ModelViewSet):
+    queryset = User.objects.all()[:1]
+    serializer_class = ConfirmSubmitFormSerializer
 	
+
 class CreateForm(viewsets.ModelViewSet):
     queryset = User.objects.all()[:1]
     serializer_class = CreateFormSerializer

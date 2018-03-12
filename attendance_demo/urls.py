@@ -21,8 +21,10 @@ from attendance_app import views
 
 router = routers.DefaultRouter()
 router.register(r'users', views.UserViewSet)
-router.register(r'createform', views.CreateForm)
-router.register(r'confirmform', views.ConfirmForm)
+router.register(r'create_form', views.CreateForm)
+router.register(r'confirm_form', views.ConfirmForm)
+router.register(r'confirm_submit_form', views.ConfirmSubmitForm)
+router.register(r'view_form', views.ViewForm)
 router.register(r'groups', views.GroupViewSet)
 
 

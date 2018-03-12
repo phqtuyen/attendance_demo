@@ -10,6 +10,30 @@ from django.http import HttpResponse
 #### Attendance Check API
 ####   Add new attendance check, create a user, create an attendance check (that link between user and attendance)
 
+
+class ViewFormSerializer(serializers.Serializer):
+	def to_internal_value(self, data):
+		return {
+		}
+
+	def to_representation(self, obj):
+		return {
+			'is_success': 'Attendance Form is created'
+		}
+
+
+class ConfirmSubmitFormSerializer(serializers.Serializer):
+	def to_internal_value(self, data):
+		return {
+		}
+
+	def to_representation(self, obj):
+		html = loader.get_template("views/create.html")
+		response = HttpResponse(html.render())
+		return {
+			'html': response.getvalue()
+		}
+
 class ConfirmFormSerializer(serializers.Serializer):
 	def to_internal_value(self, data):
 		return {
