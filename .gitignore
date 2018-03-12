@@ -3,6 +3,7 @@
 # described in https://git-scm.com/docs/gitignore
 
 
+db.sqlite3
 attendance_demo.iml
 .idea/
 *.egg-info
