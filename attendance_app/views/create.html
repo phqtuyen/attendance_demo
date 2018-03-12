@@ -2,7 +2,7 @@
 
 <p> Click the following button to generate a checking session </p>
 
-<form action="" method="post">{% csrf_token %}
+<form action={{submitURL}} method="get">{% csrf_token %}
 
-	<input type="submit" name="generate" value="generate">  
+	<input type="submit" name="create" value="create">  
 </form>
