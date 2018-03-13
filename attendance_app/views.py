@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
-from .test import test_class
+
 question_key = 'Question'
 #to be update using database
 question = "What is 1 + 1"
@@ -49,6 +49,3 @@ class AppViews:
 	def view(self,request):
 		return
 
-	def test_output(self,request):
-		ob = test_class()
-		return HttpResponse(ob.test_print())
