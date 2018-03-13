@@ -7,7 +7,8 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 class QuestionManager(models.Manager):
     def createQuestion(self,questionText):
-        self.create(questionText = questionText)
+        if (not Question.objects.filter(questionText__iexact=questionText)):
+            self.create(questionText=questionText)
 
 class Question(models.Model):
     questionText = models.CharField(max_length = 300)
@@ -15,9 +16,8 @@ class Question(models.Model):
 
 class AnswerManager(models.Manager):
     def createAnswer(self, question, answerText):
-        self.create(question = question,  
-                    answerText = answerText)
-         
+        if (not Answer.objects.filter(answerText__iexact=answerText)):
+            self.create(question=question,answerText=answerText)
 
 class Answer(models.Model):
       question = models.ForeignKey(Question, on_delete = models.SET_NULL, null = True)
