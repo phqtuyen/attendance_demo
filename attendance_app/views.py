@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.template import loader
+from django.template import loader, RequestContext
 from django.views.decorators.csrf import csrf_exempt
 
 question_key = 'Question'
@@ -14,26 +14,26 @@ class AppViews:
 		self.question = "What is 1 + 1"
 		self.answer = "2"		
 		self.views = "views/"
-	@csrf_exempt	
+	#@csrf_exempt	
 	def createForm(self,request):
 		html = loader.get_template(self.views + "create.html")
 		submitURL = request.scheme + "://" + request.get_host() + AppViews.path + '/submit' 
 		print(submitURL)
 		context = {"submitURL" : submitURL}
-		response = HttpResponse(html.render(context=context))
+		response = HttpResponse(html.render(context))
 		print(response.getvalue())
-		return response	
+		return render(request, self.views + "create.html", context)
 	# Create your views here.
-	@csrf_exempt
+	#@csrf_exempt
 	def submit(self,request): 
 		print (request.get_full_path())
 		submitResultURL = request.scheme  + "://" + request.get_host() + AppViews.path + '/submitResult'
 		context = {"question" : question, "submitResultURL" : submitResultURL}
 		html = loader.get_template(self.views + "question.html")		
 		response = HttpResponse(html.render(context=context))
-		return response	
+		return render(request, self.views + "question.html", context)
 
-	@csrf_exempt	
+	#@csrf_exempt	
 	def submitResult(self, request):
 		print (request.content_type)
 		print (request.POST)
@@ -44,7 +44,7 @@ class AppViews:
 			context['confirmResult'] = "Success!"
 		else:
 			context['confirmResult'] = "Attendance check fail, please contact the instructor."	
-		return HttpResponse(html.render(context=context))	
+		return render(request, self.views + "confirm.html", context)	
 		
 	def view(self,request):
 		return

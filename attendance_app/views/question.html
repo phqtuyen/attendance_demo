@@ -2,7 +2,7 @@
 
 <p> Please answer the following question to confirm your attendance </p>
 
-<form action={{submitResultURL}} method="post">
+<form action={{submitResultURL}} method="post"> {% csrf_token %}
 	Question: {{question}}? <input type="text" name="confirm_ans"><br>
 	<input type="submit" name="confirm_button" value="confirm">  
 </form>
