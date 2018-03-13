@@ -2,6 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader, RequestContext
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework import viewsets
+from .serializers import UserSerializer, GroupSerializer, CreateFormSerializer
+from django.contrib.auth.models import User, Group
+from django.http import JsonResponse
 
 question_key = 'Question'
 #to be update using database
@@ -48,4 +52,66 @@ class AppViews:
 		
 	def view(self,request):
 		return
+
+	def test_output(self,request):
+		ob = test_class()
+		return HttpResponse(ob.test_print())
+
+	# print(response.getvalue())
+	# return response	
+
+
+# viewsets: create, edit, delete, post, get, list
+#1. welcome user to create attendance
+#2. create attendance
+#3. allow student to check attendance
+#4. list all attendances 
+#5. list all checks of an attendance
+#6. http://www.django-rest-framework.org/api-guide/views/
+
+class APIViews:
+	def __init__(self):
+		self.data = ''
+
+	@csrf_exempt	
+	def createAttendance(self, request):
+		view = AppViews()
+		response = view.createForm(request)
+		html_value = response.getvalue().decode("utf-8")
+		return JsonResponse({
+				'key': 'create_attendance', 
+				'html': response.getvalue().decode("utf-8") 
+			})
+
+	@csrf_exempt
+	def confirmCreateAttendance(self, request):
+		# TODO: Need to create an attendance in database
+		return JsonResponse({
+				'key': 'confirm_create_attendance',
+				'attendance_id': 'NULL'
+			})
+
+	@csrf_exempt
+	def confirmSubmit(self, request):
+		# TODO: Need to create an attendance submit in database
+
+		view = AppViews()
+		response = view.submitResult(request)
+		html_value = response.getvalue().decode("utf-8")
+
+		return JsonResponse({
+				'key': 'confirm_submit',
+				'html': html_value
+			})	
+
+	@csrf_exempt
+	def viewAttendance(self, request):
+		view = AppViews()
+		response = view.view(request)
+		html_value = response.getvalue().decode("utf-8")
+
+		return JsonResponse({
+				'key': 'view_attendance',
+				'html': html_value
+			})	
 

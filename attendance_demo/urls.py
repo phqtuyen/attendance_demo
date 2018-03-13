@@ -16,8 +16,15 @@ Including another URLconf
 from django.conf.urls import url
 from django.urls import include, path
 from django.contrib import admin
+from rest_framework import routers
+from attendance_app import views
+
+router = routers.DefaultRouter()
+
 
 urlpatterns = [
 	path('attendance_app/', include('attendance_app.urls')),
+    url(r'^', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', admin.site.urls),
 ]
