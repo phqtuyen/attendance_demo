@@ -3,10 +3,10 @@ from django.http import HttpResponse
 from django.template import loader, RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
-from .serializers import UserSerializer, GroupSerializer, CreateFormSerializer
-from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 
+from attendance_app.models import Question, Answer, UserProfile, Attendance, AttendanceSubmit
+from django.utils import timezone
 question_key = 'Question'
 #to be update using database
 question = "What is 1 + 1"
@@ -20,11 +20,16 @@ class AppViews:
 		self.views = "views/"
 	#@csrf_exempt	
 	def createForm(self,request):
-		html = loader.get_template(self.views + "create.html")
+		#html = loader.get_template(self.views + "create.html")
 		submitURL = request.scheme + "://" + request.get_host() + AppViews.path + '/submit' 
 		print(submitURL)
-		context = {"submitURL" : submitURL}
-		response = HttpResponse(html.render(context))
+
+		requestParam = request.GET or request.POST
+		instructor = UserProfile.objects.createUserProfile(requestParam.get('username'), requestParam.get('chat_url'),
+															requestParam.get('first_name'), requestParam.get('last_name'),
+															requestParam.get('email'), timezone.now(), requestParam.get('role'))
+		context = {"submitURL" : submitURL, "username" : requestParam.get('username'), "chat_url" : requestParam.get('chat_url')}
+		response = HttpResponse(render(request, self.views + "create.html", context))
 		print(response.getvalue())
 		return render(request, self.views + "create.html", context)
 	# Create your views here.
@@ -32,10 +37,17 @@ class AppViews:
 	def submit(self,request): 
 		print (request.get_full_path())
 		submitResultURL = request.scheme  + "://" + request.get_host() + AppViews.path + '/submitResult'
-		context = {"question" : question, "submitResultURL" : submitResultURL}
-		html = loader.get_template(self.views + "question.html")		
-		response = HttpResponse(html.render(context=context))
-		return render(request, self.views + "question.html", context)
+
+		requestParam = request.GET or request.POST
+		username = requestParam.get('username')
+		chat_url = requestParam.get('chat_url')
+		instructor = UserProfile.objects.hasUserWithRole(username, chat_url, 'instructor')
+		if (instructor):
+			attendanceID = Attendance.objects.createAttendance(instructor, timezone.now())
+			context = {"question" : question, "submitResultURL" : submitResultURL, "attendance_id" : attendanceID}
+			#html = loader.get_template(self.views + "question.html")		
+			response = HttpResponse(render(request, self.views + "question.html", context))
+			return response	
 
 	#@csrf_exempt	
 	def submitResult(self, request):
@@ -43,15 +55,33 @@ class AppViews:
 		print (request.POST)
 		print (request.GET)
 		context = {}
-		html = loader.get_template(self.views + "confirm.html")
-		if (request.POST.get("confirm_ans") == self.answer):
-			context['confirmResult'] = "Success!"
+		#html = loader.get_template(self.views + "confirm.html")
+		requestParam = request.POST or request.GET
+		#student = UserProfile.objects.createUserProfile(requestParam.get('username'), requestParam.get('chat_url'),
+		#													requestParam.get('first_name'), requestParam.get('last_name'),
+		#													requestParam.get('email'), timezone.now(), requestParam.get('role'))
+		attendance = Attendance.getAttendanceByID(requestParam.get('attendance_id'))
+		if ((requestParam.get("confirm_ans") == self.answer) and 
+			attendance):		
+				context['confirmResult'] = "Success!"
+				submission = AttendanceSubmit.createAttendanceSubmit(attendance=attendance, submitted_on=timezone.now(), username=requestParam.get('username'),
+																		chat_url=requestParam.get('chat_url'), first_name=requestParam.get('first_name'),
+																		last_name=requestParam.get('last_name'), email=requestParam.get('email'),
+																		created_on=timezone.now(), role=requestParam.get('role'))
 		else:
 			context['confirmResult'] = "Attendance check fail, please contact the instructor."	
-		return render(request, self.views + "confirm.html", context)	
-		
+
+		return HttpResponse(render(request, self.views + "confirm.html", context))	
+
 	def view(self,request):
-		return
+		requestParam = request.GET or request.POST
+		context = {}
+		attendance = Attendance.getAttendanceByID(requestParam.get('attendance_id'))
+		if (attendance):
+			submissionList = AttendanceSubmit.getSubmissionList(attendance)
+			context['submission_list'] = submissionList
+
+		return HttpResponse(render(request, self.views + "view.html", context))
 
 	def test_output(self,request):
 		ob = test_class()
