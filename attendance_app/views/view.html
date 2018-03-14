@@ -1,0 +1,11 @@
+<h1> Submitted students</h1>
+
+{% if submission_list %}
+	<ul>
+		{% for submission in submission_list%}	
+			<li> {{submission.username}} {{submission.first_name}} {{submission.last_name}} {{submission.chat_url}}</li>
+		{% endfor %}	
+	</ul>
+{% else %}
+	No submission has been made.	
+{% endif %}	
