@@ -121,9 +121,24 @@ class APIViews:
 		view = AppViews()
 		response = view.createForm(request)
 		html_value = response.getvalue().decode("utf-8")
+
 		return JsonResponse({
-				'key': 'create_attendance', 
-				'html': response.getvalue().decode("utf-8") 
+			"username": "Att",
+			"icon_emoji": ":ghost:",
+			"text": "Response text",
+			"attachments": [
+				{
+					"title": "Rocket.Chat",
+					"title_link": "https://rocket.chat",
+					"text": "Rocket.Chat, the best open source chat",
+					"image_url": "https://rocket.chat/images/mockup.png",
+					"color": "#764FA5"
+				}, 
+				{
+					'key': 'create_attendance', 
+					'html': response.getvalue().decode("utf-8") 				
+				}
+				]
 			})
 
 	@csrf_exempt
