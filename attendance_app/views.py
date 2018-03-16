@@ -125,7 +125,7 @@ class APIViews:
 		return JsonResponse({
 			"username": "Att",
 			"icon_emoji": ":ghost:",
-			"text": "Response text",
+			"text": "Response text: " + 'create_attendance: ' + response.getvalue().decode("utf-8"),
 			"attachments": [
 				{
 					"title": "Rocket.Chat",
