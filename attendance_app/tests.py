@@ -36,6 +36,7 @@ class ViewTestCase(TestCase):
     def setUp(self):
     	self.app_view = AppViews()
     	self.host = 'http://127.0.0.1:8000/'
+    	self.url = self.host + 'attendance_app/'
     	self.instructor_data = {'username': 'meomap', 
     							'chat_url': 'tuyen@gmail.com', 
     							'first_name': 'tuyen', 
@@ -43,16 +44,31 @@ class ViewTestCase(TestCase):
     							'email': 'kootuyen@gmail.com', 
     							'role': 'instructor'}
 
-    	self.student_data = {'username': 'meou', 'chat_url': 'meou@gmail.com', 'first_name': 'tuyen', 'last_name': 'pham', 'email': 'kootuyen@gmail.com', 'role': 'instructor'}						
+    	self.student_data = {'username': 'meou', 
+    							'chat_url': 'meou@gmail.com', 
+    							'first_name': 'tuyen', 
+    							'last_name': 'pham', 
+    							'email': 'kootuyen@gmail.com', 
+    							'role': 'student'}
+
+    	self.student_submit_true = student_data.copy()
+    	self.student_submit_true['attendance_id'] = '1'
+    	self.student_submit_true['confirm_ans'] = '2'						
+
     def test_createForm(self):
     	 
-    	response = requests.post(self.host + 'attendance_app/', data=data)
+    	response = requests.post(self.url, 
+    								data = self.instructor_data)
+    	true_resp = 
+    	self.assertEqual()     		
 
-		self.app_view     		
+    def test_submit(self):	
+    	response = requests.post(self.url + 'submit', 
+    								data = self.instructor_data)
 
-
-
-
+    def test_submitResult(self):
+    	response = requests.post(self.url + 'submitResult',
+    								data = self.student_submit_true)	
     # def setUp(self):
     #     """Define the test client and other test variables."""
     #     self.client = APIClient()
