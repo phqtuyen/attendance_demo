@@ -18,23 +18,34 @@ class AppViews:
 		self.question = "What is 1 + 1"
 		self.answer = "2"		
 		self.views = "views/"
+
+	def userProfileFromRequest(self, requestParam):
+		tempProfile = UserProfile() \
+						.configID(requestParam.get('username'), requestParam.get('chat_url')) \
+						.configName(requestParam.get('first_name'), requestParam.get('last_name'))\
+						.configEmail(requestParam.get('email'), requestParam.get('role')) \
+						.configCreatedOn(None)
+		tempProfile.save()				
+		return tempProfile				
 	#@csrf_exempt	
-	def createForm(self,request):
+	def createForm(self, request):
 		#html = loader.get_template(self.views + "create.html")
 		submitURL = request.scheme + "://" + request.get_host() + AppViews.path + '/submit' 
 		print(submitURL)
 
 		requestParam = request.GET or request.POST
-		instructor = UserProfile.objects.createUserProfile(requestParam.get('username'), requestParam.get('chat_url'),
-															requestParam.get('first_name'), requestParam.get('last_name'),
-															requestParam.get('email'), timezone.now(), requestParam.get('role'))
-		context = {"submitURL" : submitURL, "username" : requestParam.get('username'), "chat_url" : requestParam.get('chat_url')}
+		print(requestParam)
+		user_prof = self.userProfileFromRequest(requestParam)
+		instructor = UserProfile.objects.createUserProfile(self.userProfileFromRequest(requestParam))
+		context = {"submitURL" : submitURL, 
+					"username" : instructor.username, 
+					"chat_url" : instructor.chat_url}
 		response = HttpResponse(render(request, self.views + "create.html", context))
 		print(response.getvalue())
 		return render(request, self.views + "create.html", context)
 	# Create your views here.
 	#@csrf_exempt
-	def submit(self,request): 
+	def submit(self, request): 
 		print (request.get_full_path())
 		submitResultURL = request.scheme  + "://" + request.get_host() + AppViews.path + '/submitResult'
 
@@ -64,10 +75,9 @@ class AppViews:
 		if ((requestParam.get("confirm_ans") == self.answer) and 
 			attendance):		
 				context['confirmResult'] = "Success!"
-				submission = AttendanceSubmit.createAttendanceSubmit(attendance=attendance, submitted_on=timezone.now(), username=requestParam.get('username'),
-																		chat_url=requestParam.get('chat_url'), first_name=requestParam.get('first_name'),
-																		last_name=requestParam.get('last_name'), email=requestParam.get('email'),
-																		created_on=timezone.now(), role=requestParam.get('role'))
+				tempProfile = userProfileFromRequest(requestParam)
+				submission = AttendanceSubmit.objects.createAttendanceSubmit(attendance=attendance,  
+																				tempProfile=self.userProfileFromRequest(requestParam))
 		else:
 			context['confirmResult'] = "Attendance check fail, please contact the instructor."	
 
