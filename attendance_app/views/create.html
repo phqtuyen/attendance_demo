@@ -2,7 +2,8 @@
 
 <p> Click the following button to generate a checking session </p>
 
-<form action={{submitURL}} method="get">{% csrf_token %}
-
+<form action={{submitURL}} method="post">{% csrf_token %}
+	<input type="hidden" name="username" value = {{username}}>
+	<input type="hidden" name="chat_url" value = {{chat_url}}>
 	<input type="submit" name="create" value="create">  
 </form>
