@@ -32,6 +32,7 @@ class UserProfileManager(models.Manager):
             userProfile = self.create(username=tempProfile.username,
                                          chat_url=tempProfile.chat_url)
             userProfile.configFromProfile(tempProfile)
+            userProfile.save()
         return userProfile    
     
     def hasUserProfile(self, username, chat_url):
@@ -121,7 +122,7 @@ class Attendance(models.Model):
     created_on = models.DateTimeField(auto_now_add = True)
     objects = AttendanceManager()    
 
-class AttendanceSubmitManager(models.Model):
+class AttendanceSubmitManager(models.Manager):
     def createAttendanceSubmit(self, attendance, tempProfile):
 
         submitted_by = UserProfile.objects.createUserProfile(tempProfile) 
