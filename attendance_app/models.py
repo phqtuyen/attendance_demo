@@ -1,5 +1,6 @@
 from django.db import models
-
+from django.utils import timezone
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 # Create your models here.
 
 #Manager Class for UserProfile
@@ -24,11 +25,13 @@ class Answer(models.Model):
 
 class UserProfileManager(models.Manager):
     #create new userprofile if not existed 
-    def createUserProfile(self, username, chat_url, first_name, last_name, email, created_on, role):
-        userProfile = UserProfile.objects.hasUserProfile(username__exact=username, chat_url__exact=chat_url)
+    def createUserProfile(self, tempProfile):
+        userProfile = UserProfile.objects.hasUserProfile(username=tempProfile.username, 
+                                                            chat_url=tempProfile.chat_url)
         if (not userProfile):
-            userProfile = self.create(username=username, chat_url=chat_url, first_name=first_name, 
-                                        last_name=last_name, email=email, created_on=created_on, role=role)
+            userProfile = self.create(username=tempProfile.username,
+                                         chat_url=tempProfile.chat_url)
+            userProfile.configFromProfile(tempProfile)
         return userProfile    
     
     def hasUserProfile(self, username, chat_url):
@@ -38,7 +41,7 @@ class UserProfileManager(models.Manager):
         except MultipleObjectsReturned:
             print ("More than one user with the same username and chat_url.")
             return None
-        except DoesNotExist:
+        except ObjectDoesNotExist:
             print ("UserProfile does not exist.")
             return None
 
@@ -61,6 +64,38 @@ class UserProfile(models.Model):
     role = models.CharField(max_length = 40)
     objects = UserProfileManager()
 
+    def configID(self, username, chat_url):
+        self.username = username
+        self.chat_url = chat_url
+        return self
+
+    def configName(self, first_name, last_name):
+        self.first_name = first_name
+        self.last_name = last_name
+        return self    
+        
+    def configEmail(self, email, role):
+        self.email = email
+        self.role = role
+        return self
+
+    def configCreatedOn(self, created_on):
+        if (created_on):
+            self.created_on = created_on
+        else:
+            self.created_on = timezone.now()
+        return self    
+
+    def configFromProfile(self, tempProfile):
+        first_name = tempProfile.first_name
+        last_name = tempProfile.last_name
+        email = tempProfile.email
+        role = tempProfile.role
+        created_on = tempProfile.created_on or timezone.now()
+        #if (tempProfile.created_on) : created_on = tempProfile.created_on 
+        #else:   created_on = timezone.now()    
+        return self
+
     def __str__(self):
         return self.username
 
@@ -76,7 +111,7 @@ class AttendanceManager(models.Manager):
         except MultipleObjectsReturned:
             print ("More than one objects with the same username and chat_url.")
             return None
-        except DoesNotExist:
+        except ObjectDoesNotExist:
             print ("Object does not exist.")
             return None   
 
@@ -87,14 +122,11 @@ class Attendance(models.Model):
     objects = AttendanceManager()    
 
 class AttendanceSubmitManager(models.Model):
-    def createAttendanceSubmit(self, attendance, submitted_on, username, chat_url,
-                                first_name, last_name, email, created_on, role):
+    def createAttendanceSubmit(self, attendance, tempProfile):
 
-        submitted_by = UserProfile.objects.createUserProfile(username=username, chat_url=chat_url, 
-                                                     first_name=first_name, last_name=last_name,
-                                                     email=email, created_on=created_on, role=role) 
+        submitted_by = UserProfile.objects.createUserProfile(tempProfile) 
 
-        attendanceSubmit = self.create(attendance=attendance, submitted_on=submitted_on, submitted_by=submitted_by)
+        attendanceSubmit = self.create(attendance=attendance, submitted_on=timezone.now(), submitted_by=submitted_by)
         return attendanceSubmit.id
 
     def createAttSubmit(self, attendance, submitted_on, submitted_by):
