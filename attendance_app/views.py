@@ -19,6 +19,15 @@ class AppViews:
 		self.answer = "2"		
 		self.views = "views/"
 
+
+	def submitUrlToConfirmForm(self, request):
+		print(request.scheme)
+		print(request.get_host())
+		submitURL = request.scheme + "://" + request.get_host() + AppViews.path + '/submit' 
+		print('submitURL')
+		print(submitURL)
+		return submitURL
+
 	def userProfileFromRequest(self, requestParam):
 		tempProfile = UserProfile() \
 						.configID(requestParam.get('username'), requestParam.get('chat_url')) \
@@ -29,7 +38,7 @@ class AppViews:
 	#@csrf_exempt	
 	def createForm(self, request):
 		#html = loader.get_template(self.views + "create.html")
-		submitURL = request.scheme + "://" + request.get_host() + AppViews.path + '/submit' 
+		submitURL = self.submitUrlToConfirmForm(request)
 		#print(submitURL)
 
 		requestParam = request.GET or request.POST
@@ -112,33 +121,40 @@ class AppViews:
 #5. list all checks of an attendance
 #6. http://www.django-rest-framework.org/api-guide/views/
 
+# API:
+#  X-Auth-Token: pl59Z7F1S7c5MGIMi8ZtQ6d1XAtvafqwCoc1VFoyRCN
+#  X-User-Id: KEPvCAsPtzniBTdYB
+
+
 class APIViews:
+	path = '/attendance_app'
+
 	def __init__(self):
 		self.data = ''
+		self.rocketPath = 'rocket/'
+
+
+	def submitUrlToConfirmForm(self, request):
+		submitURL = request.scheme + "://" + request.get_host() + APIViews.path + '/confirm_create_attendance' 
+		return submitURL
+
 
 	@csrf_exempt	
 	def createAttendance(self, request):
 		view = AppViews()
-		response = view.createForm(request)
+		
+		html = loader.get_template(self.rocketPath + "create.rocket")
+		submitURL = self.submitUrlToConfirmForm(request)
+		print(submitURL)
+		context = {"submitURL" : submitURL}
+		response = HttpResponse(html.render(context))
+
 		html_value = response.getvalue().decode("utf-8")
 
 		return JsonResponse({
-			"username": "Att",
+			"username": "Attendance",
 			"icon_emoji": ":ghost:",
-			"text": "Response text: " + 'create_attendance: ' + response.getvalue().decode("utf-8"),
-			"attachments": [
-				{
-					"title": "Rocket.Chat",
-					"title_link": "https://rocket.chat",
-					"text": "Rocket.Chat, the best open source chat",
-					"image_url": "https://rocket.chat/images/mockup.png",
-					"color": "#764FA5"
-				}, 
-				{
-					'key': 'create_attendance', 
-					'html': response.getvalue().decode("utf-8") 				
-				}
-				]
+			"text": html_value,
 			})
 
 	@csrf_exempt
