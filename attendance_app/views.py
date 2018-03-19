@@ -21,11 +21,7 @@ class AppViews:
 
 
 	def submitUrlToConfirmForm(self, request):
-		print(request.scheme)
-		print(request.get_host())
 		submitURL = request.scheme + "://" + request.get_host() + AppViews.path + '/submit' 
-		print('submitURL')
-		print(submitURL)
 		return submitURL
 
 	def userProfileFromRequest(self, requestParam):
@@ -135,7 +131,9 @@ class APIViews:
 
 
 	def submitUrlToConfirmForm(self, request):
-		submitURL = request.scheme + "://" + request.get_host() + APIViews.path + '/confirm_create_attendance' 
+		params = request.GET or request.POST
+		source = params.get('source')
+		submitURL = request.scheme + "://" + request.get_host() + APIViews.path + '/confirm_create_attendance?source=' + str(source)
 		return submitURL
 
 
@@ -160,9 +158,18 @@ class APIViews:
 	@csrf_exempt
 	def confirmCreateAttendance(self, request):
 		# TODO: Need to create an attendance in database
+		# TODO: How to deal with username + password from rocket.chat
+		username = 'attendance'
+		password = 'attendance'
+		params = request.GET or request.POST
+		source = params.get('source')	
+
+		print("source" + source)	
+
 		return JsonResponse({
-				'key': 'confirm_create_attendance',
-				'attendance_id': 'NULL'
+			"username": "Attendance",
+			"icon_emoji": ":ghost:",
+			"text": 'Your attendance check has been sent to every student, source = ' + source,
 			})
 
 	@csrf_exempt
