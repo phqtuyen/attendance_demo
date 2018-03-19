@@ -159,4 +159,7 @@ class AttendanceSubmit(models.Model):
 
             
 
-
+class RocketAPIAuthentication(models.Model):
+    rocket_chat_user_id = models.CharField(max_length = 100)
+    rocket_chat_auth_token = models.CharField(max_length = 150)
+    rocket_chat_url = models.CharField(max_length = 255)
