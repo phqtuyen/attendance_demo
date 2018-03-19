@@ -67,8 +67,8 @@ class UserProfile(models.Model):
     objects = UserProfileManager()
 
     def configID(self, username, chat_url):
-        self.username = username
-        self.chat_url = chat_url
+        self.username = username or ""
+        self.chat_url = chat_url or ""
         return self
 
     def configName(self, first_name, last_name):

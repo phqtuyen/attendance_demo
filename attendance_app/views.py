@@ -25,7 +25,7 @@ class AppViews:
 						.configName(requestParam.get('first_name'), requestParam.get('last_name'))\
 						.configEmail(requestParam.get('email'), requestParam.get('role')) \
 						.configCreatedOn(None)
-		return tempProfile				
+		return tempProfile
 	#@csrf_exempt	
 	def createForm(self, request):
 		#html = loader.get_template(self.views + "create.html")
@@ -58,6 +58,8 @@ class AppViews:
 			#html = loader.get_template(self.views + "question.html")		
 			response = HttpResponse(render(request, self.views + "question.html", context))
 			return response	
+
+		return render(request, self.views + "create.html", context)
 
 	#@csrf_exempt	
 	def submitResult(self, request):
