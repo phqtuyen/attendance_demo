@@ -7,7 +7,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 class QuestionManager(models.Manager):
     def createQuestion(self,questionText):
-        self.create(questionText=questionText)
+        self.create(questionText = questionText)
 
 class Question(models.Model):
     questionText = models.CharField(max_length = 300)
@@ -15,7 +15,8 @@ class Question(models.Model):
 
 class AnswerManager(models.Manager):
     def createAnswer(self, question, answerText):
-        self.create(question=question,answerText=answerText)
+        self.create(question = question,  
+                    answerText = answerText)
          
 
 class Answer(models.Model):
@@ -37,7 +38,7 @@ class UserProfileManager(models.Manager):
     
     def hasUserProfile(self, username, chat_url):
         try:
-            userProfile = UserProfile.objects.get(username__iexact=username, chat_url__iexact=chat_url)
+            userProfile = UserProfile.objects.get(username__iexact = username, chat_url__iexact = chat_url)
             return userProfile
         except MultipleObjectsReturned:
             print ("More than one user with the same username and chat_url.")
@@ -102,12 +103,13 @@ class UserProfile(models.Model):
 
 class AttendanceManager(models.Manager):
     def createAttendance(self, created_by, created_on):
-        attendance=self.create(created_by=created_by,created_on=created_on)
+        attendance=self.create(created_by = created_by,
+                                created_on = created_on)
         return attendance.id
 
     def getAttendanceByID(self, attendanceID):
         try:
-            attendance = Attendance.objects.get(id__exact=attendanceID)
+            attendance = Attendance.objects.get(id__exact = attendanceID)
             return attendance
         except MultipleObjectsReturned:
             print ("More than one objects with the same username and chat_url.")
@@ -127,16 +129,20 @@ class AttendanceSubmitManager(models.Manager):
 
         submitted_by = UserProfile.objects.createUserProfile(tempProfile) 
 
-        attendanceSubmit = self.create(attendance=attendance, submitted_on=timezone.now(), submitted_by=submitted_by)
+        attendanceSubmit = self.create(attendance = attendance, 
+                                        submitted_on = timezone.now(), 
+                                        submitted_by = submitted_by)
         return attendanceSubmit.id
 
     def createAttSubmit(self, attendance, submitted_on, submitted_by):
-        submission = self.create(attendance=attendance, submitted_on=submitted_on, submitted_by=submitted_by)   
+        submission = self.create(attendance = attendance, 
+                                    submitted_on = submitted_on, 
+                                    submitted_by = submitted_by)   
         return submission.id
 
     def getSubmissionList(self, attendance):
         try :
-            submissionList = self.filter(attendance__id__exact=attendance.id)
+            submissionList = self.filter(attendance__id__exact = attendance.id)
             if (not submissionList):
                 return None
             else:

@@ -75,8 +75,8 @@ class AppViews:
 			attendance):		
 				context['confirmResult'] = "Success!"
 				tempProfile = userProfileFromRequest(requestParam)
-				submission = AttendanceSubmit.objects.createAttendanceSubmit(attendance=attendance,  
-																				tempProfile=self.userProfileFromRequest(requestParam))
+				submission = AttendanceSubmit.objects.createAttendanceSubmit(attendance  =attendance,  
+																				tempProfile = self.userProfileFromRequest(requestParam))
 		else:
 			context['confirmResult'] = "Attendance check fail, please contact the instructor."	
 
