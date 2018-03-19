@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from .views import *
+from .api_views import *
 import socket
 
 view = AppViews()
