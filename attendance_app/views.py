@@ -25,7 +25,6 @@ class AppViews:
 						.configName(requestParam.get('first_name'), requestParam.get('last_name'))\
 						.configEmail(requestParam.get('email'), requestParam.get('role')) \
 						.configCreatedOn(None)
-		tempProfile.save()				
 		return tempProfile				
 	#@csrf_exempt	
 	def createForm(self, request):
