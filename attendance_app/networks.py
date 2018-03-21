@@ -1,5 +1,7 @@
 import requests
 
+# Instructions on using requests: http://docs.python-requests.org/en/latest/user/quickstart/
+
 class RocketUsersAPI:
     def __init__(self, url, authToken, userID):
         self.url = url or "http://localhost:3000/api/v1/"
