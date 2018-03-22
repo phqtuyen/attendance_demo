@@ -7,6 +7,9 @@ from rest_framework import status
 #from django.core.urlresolvers import reverse
 from attendance_app.views import AppViews
 from attendance_app.models import UserProfile, Attendance, AttendanceSubmit
+from attendance_app.networks import RocketUsersAPI
+from attendance_app.networks import RocketSettingSandBox
+
 from django.http import HttpResponse, HttpRequest
 from django.utils import timezone
 import requests
@@ -127,3 +130,38 @@ class ViewTestCase(TestCase):
         print(res_view_some_submissions.content)       
         res_view_wrong_id = self.client.post(self.URL + 'view', {'attendance_id' : 0})
         self.assertEqual(res_view_wrong_id.status_code, 200)
+
+class RocketSet:
+    def __init__(self):
+        self.url = None
+        self.auth_token = None
+        self.user_id = None
+
+class TestRocketUsersAPI(TestCase):
+
+    def setUp(self):
+        rocket_setting = RocketSet()          
+        self.rc_user_api = RocketUsersAPI(rocket_setting)
+
+    def test_login(self):
+        username = 'attendance'
+        password = 'attendance'
+        r = self.rc_user_api.login(username, password)
+        self.assertNotEqual(r.get_uid(), None)
+        self.assertNotEqual(r.get_auth_token(), None)
+        self.assertEqual(r.is_success(), True)
+        #print(r)
+        
+    def test_get_users(self):
+        r = self.rc_user_api.get_users()
+        self.assertEqual(r.is_success(), True)
+        self.assertEqual(len(r.get_users()) > 0, True)
+        #print(r)
+
+    def test_post_message(self):
+        channel = 'general'
+        text = 'hello world'
+        r = self.rc_user_api.post_message(channel, text)
+        self.assertNotEqual(r.get_msg, None)
+        self.assertNotEqual(r.get_channel, "")
+        #print(r.json().get('message'))
