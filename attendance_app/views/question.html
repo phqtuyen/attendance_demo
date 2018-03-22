@@ -4,5 +4,6 @@
 
 <form action={{submitResultURL}} method="post"> {% csrf_token %}
 	Question: {{question}}? <input type="text" name="confirm_ans"><br>
+	<input type="hidden" name="attendance_id" value={{attendance_id}}>
 	<input type="submit" name="confirm_button" value="confirm">  
 </form>
