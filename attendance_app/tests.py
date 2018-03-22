@@ -79,16 +79,18 @@ class ViewTestCase(TestCase):
         resp = self.client.post(self.URL, data = self.instructor_data)  
         resp1 = self.client.post(self.URL + 'submit', {'username' : 'username', 'chat_url' : 'url'})
         self.assertEqual(resp1.status_code,200)
-        #print(resp1.context.get('attendance_id'))
+        #print(resp1.content)
 
     def test_submit_false(self):
         resp1 = self.client.post(self.URL + 'submit', {'username' : 'u', 'chat_url' : 'u'})
+        #print(resp1.content)
         self.assertEqual(resp1.status_code,200)
-        #print(resp1.content)   
+           
 
     def test_submit_result_true(self):
         resp = self.client.post(self.URL, data = self.instructor_data)  
         resp_submit = self.client.post(self.URL + 'submit', {'username' : 'username', 'chat_url' : 'url'})
+        #print(resp_submit.content)
         res_data = self.student_data.copy()
         res_data['confirm_ans'] = 2
         res_data['attendance_id'] = resp_submit.context.get('attendance_id')
@@ -108,7 +110,8 @@ class ViewTestCase(TestCase):
 
     def test_view(self):
         resp = self.client.post(self.URL, data = self.instructor_data)  
-        resp_submit = self.client.post(self.URL + 'submit', {'username' : 'username', 'chat_url' : 'url'})      
+        resp_submit = self.client.post(self.URL + 'submit', {'username' : 'username', 'chat_url' : 'url'})
+        #print(resp_submit)      
         res_view_no_submission = self.client.post(self.URL + 'view', {'attendance_id' : resp_submit.context.get('attendance_id')})
         print(res_view_no_submission.content)      
         self.assertEqual(res_view_no_submission.status_code, 200)

@@ -30,25 +30,26 @@ class AppViews:
 	def createForm(self, request):
 		#html = loader.get_template(self.views + "create.html")
 		submitURL = request.scheme + "://" + request.get_host() + AppViews.path + '/submit' 
-		print(submitURL)
+		#print(submitURL)
 
 		requestParam = request.GET or request.POST
-		print(requestParam)
+		#print(requestParam)
 		user_prof = self.userProfileFromRequest(requestParam)
 		instructor = UserProfile.objects.createUserProfile(self.userProfileFromRequest(requestParam))
 		context = {"submitURL" : submitURL, 
 					"username" : instructor.username, 
 					"chat_url" : instructor.chat_url}
 		response = HttpResponse(render(request, self.views + "create.html", context))
-		print(response.getvalue())
-		return render(request, self.views + "create.html", context)
+		#print(response.getvalue())
+		return response
 	# Create your views here.
 	#@csrf_exempt
 	def submit(self, request): 
-		print (request.get_full_path())
+		#print (request.get_full_path())
 		submitResultURL = request.scheme  + "://" + request.get_host() + AppViews.path + '/submitResult'
 
 		requestParam = request.GET or request.POST
+		#print(requestParam)
 		username = requestParam.get('username')
 		chat_url = requestParam.get('chat_url')
 		instructor = UserProfile.objects.hasUserWithRole(username, chat_url, 'instructor')
@@ -58,25 +59,25 @@ class AppViews:
 			#html = loader.get_template(self.views + "question.html")		
 			response = HttpResponse(render(request, self.views + "question.html", context))
 			return response	
-
-		return render(request, self.views + "create.html", context)
+		else:	
+			return HttpResponse('Only Registered instructors are allowed to use this feature.')
 
 	#@csrf_exempt	
 	def submitResult(self, request):
-		print (request.content_type)
-		print (request.POST)
-		print (request.GET)
+		#print (request.content_type)
+		#print (request.POST)
+		#print (request.GET)
 		context = {}
 		#html = loader.get_template(self.views + "confirm.html")
 		requestParam = request.POST or request.GET
 		#student = UserProfile.objects.createUserProfile(requestParam.get('username'), requestParam.get('chat_url'),
 		#													requestParam.get('first_name'), requestParam.get('last_name'),
 		#													requestParam.get('email'), timezone.now(), requestParam.get('role'))
-		attendance = Attendance.getAttendanceByID(requestParam.get('attendance_id'))
+		attendance = Attendance.objects.getAttendanceByID(requestParam.get('attendance_id'))
 		if ((requestParam.get("confirm_ans") == self.answer) and 
 			attendance):		
 				context['confirmResult'] = "Success!"
-				tempProfile = userProfileFromRequest(requestParam)
+				tempProfile = self.userProfileFromRequest(requestParam)
 				submission = AttendanceSubmit.objects.createAttendanceSubmit(attendance  =attendance,  
 																				tempProfile = self.userProfileFromRequest(requestParam))
 		else:
@@ -87,13 +88,14 @@ class AppViews:
 	def view(self,request):
 		requestParam = request.GET or request.POST
 		context = {}
-		attendance = Attendance.getAttendanceByID(requestParam.get('attendance_id'))
+		attendance = Attendance.objects.getAttendanceByID(requestParam.get('attendance_id'))
 		if (attendance):
-			submissionList = AttendanceSubmit.getSubmissionList(attendance)
+			submissionList = AttendanceSubmit.objects.getSubmissionList(attendance)
 			context['submission_list'] = submissionList
-
-		return HttpResponse(render(request, self.views + "view.html", context))
-
+			print(submissionList)
+			return HttpResponse(render(request, self.views + "view.html", context))
+		else:
+			return HttpResponse("No such attendance.")	
 	def test_output(self,request):
 		ob = test_class()
 		return HttpResponse(ob.test_print())

@@ -89,11 +89,11 @@ class UserProfile(models.Model):
         return self    
 
     def configFromProfile(self, tempProfile):
-        first_name = tempProfile.first_name
-        last_name = tempProfile.last_name
-        email = tempProfile.email
-        role = tempProfile.role
-        created_on = tempProfile.created_on or timezone.now()
+        self.first_name = tempProfile.first_name
+        self.last_name = tempProfile.last_name
+        self.email = tempProfile.email
+        self.role = tempProfile.role
+        self.created_on = tempProfile.created_on or timezone.now()
         #if (tempProfile.created_on) : created_on = tempProfile.created_on 
         #else:   created_on = timezone.now()    
         return self
