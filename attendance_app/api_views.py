@@ -26,13 +26,7 @@ class APIViews:
 	def __init__(self):
 		self.data = ''
 		self.rocketPath = 'views/'
-
-
-	def submitUrlToConfirmForm(self, request):
-		params = request.GET or request.POST
-		source = params.get('source')
-		submitURL = request.scheme + "://" + request.get_host() + APIViews.path + '/confirm_create_attendance?source=' + str(source)
-		return submitURL
+		self.appControllers = AppControllers()
 
 	def templateResponseDictionary(self, request):
 		return {
@@ -42,17 +36,17 @@ class APIViews:
 
 	@csrf_exempt	
 	def createAttendance(self, request):
-		view = AppViews()
-		
-		html = loader.get_template(self.rocketPath + "create.html")
-		submitURL = self.submitUrlToConfirmForm(request)
-		print(submitURL)
-		context = {"submitURL" : submitURL}
-		response = HttpResponse(html.render(context))
+		submitURL = self.appControllers.submitUrlToConfirmForm(request, AppViews.path)
+		instructor = self.appControllers.createUserProfileIfNeeded(request)
+		context = self.appControllers.contextForCreateHTML(instructor, submitURL)
+
+		response = HttpResponse(render(request, self.viewPath + "create.html", context))
 
 		html_value = response.getvalue().decode("utf-8")
+
 		templateDictionary = self.templateResponseDictionary(request)
 		templateDictionary['text'] = html_value
+		
 		return JsonResponse(templateDictionary)
 
 	@csrf_exempt

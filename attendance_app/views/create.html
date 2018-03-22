@@ -1,5 +1,13 @@
+<html>
+<head>
+	<script type="text/javascript">
+		function callConfirmCreateAttendance(submitURL) {
+			console.log("hello world" + submitURL)
+		}
+	</script>
+</head>
+<body>
 <b> Welcome to Attendance Checker </b>
-<p><form action={{submitURL}} method="get">{% csrf_token %}
-	Click the following button to generate a checking session
-	<input type="submit" name="create" value="create"/>
-</form></p>
+<button onclick=callConfirmCreateAttendance("{{submitURL}}")>Click me</button>
+</body>
+</html>
