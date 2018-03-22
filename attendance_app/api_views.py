@@ -25,7 +25,7 @@ class APIViews:
 
 	def __init__(self):
 		self.data = ''
-		self.rocketPath = 'rocket/'
+		self.rocketPath = 'views/'
 
 
 	def submitUrlToConfirmForm(self, request):
@@ -44,7 +44,7 @@ class APIViews:
 	def createAttendance(self, request):
 		view = AppViews()
 		
-		html = loader.get_template(self.rocketPath + "create.rocket")
+		html = loader.get_template(self.rocketPath + "create.html")
 		submitURL = self.submitUrlToConfirmForm(request)
 		print(submitURL)
 		context = {"submitURL" : submitURL}
