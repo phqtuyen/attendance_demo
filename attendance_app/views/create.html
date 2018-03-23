@@ -1,13 +1,56 @@
 <html>
 <head>
-	<script type="text/javascript">
+	<style>
+	.button {
+	    background-color: #4CAF50; /* Green */
+	    border: none;
+	    color: white;
+	    padding: 15px 32px;
+	    text-align: center;
+	    text-decoration: none;
+	    font-size: 12px;
+	    margin: 4px 2px;
+	    cursor: pointer;
+	}
+	</style>
+
+
+<!-- 	<script type="text/javascript">
 		function callConfirmCreateAttendance(submitURL) {
 			console.log("hello world" + submitURL)
 		}
+	</script> -->
+	<script type="text/javascript">
+		function callConfirmCreateAttendance2(submitURL) {
+			console.log("hello world" + submitURL);
+		}
+
+		function callConfirmCreateAttendance(submitURL) {
+			submitURL = "http://www.google.com"
+            console.log("hello world 2" + submitURL);
+            if (window.XMLHttpRequest) {
+    			// code for modern browsers
+    			xhttp = new XMLHttpRequest();
+ 			} else {
+    			// code for old IE browsers
+    			xhttp = new ActiveXObject("Microsoft.XMLHTTP");
+			}
+
+    		xhttp.open("POST", submitURL, true);
+    		xhttp.setRequestHeader("Content-type", "application/json");
+    		xhttp.send();
+    		// var response = JSON.parse(xhttp.responseText;
+    	}
 	</script>
 </head>
 <body>
 <b> Welcome to Attendance Checker </b>
+<button onclick=callConfirmCreateAttendance2("{{submitURL}}")>Click me</button>
 <button onclick=callConfirmCreateAttendance("{{submitURL}}")>Click me</button>
+
+<button class="button">Create Attendance Check</button>
 </body>
 </html>
+
+ <!-- onclick=callConfirmCreateAttendance("{{submitURL}}") -->
+ <!-- <button onclick=callConfirmCreateAttendance("{{submitURL}}")>Click me</button> -->

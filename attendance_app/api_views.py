@@ -36,11 +36,11 @@ class APIViews:
 
 	@csrf_exempt	
 	def createAttendance(self, request):
-		submitURL = self.appControllers.submitUrlToConfirmForm(request, AppViews.path)
+		submitURL = self.appControllers.urlToConfirmCreateAttendance(request, AppViews.path)
 		instructor = self.appControllers.createUserProfileIfNeeded(request)
-		context = self.appControllers.contextForCreateHTML(instructor, submitURL)
+		context = self.appControllers.contextForCreateAttendanceHTML(instructor, submitURL)
 
-		response = HttpResponse(render(request, self.viewPath + "create.html", context))
+		response = HttpResponse(render(request, self.rocketPath + "create.html", context))
 
 		html_value = response.getvalue().decode("utf-8")
 
@@ -55,12 +55,18 @@ class APIViews:
 		# TODO: How to deal with username + password from rocket.chat
 		username = 'attendance'
 		password = 'attendance'
-		params = request.GET or request.POST
-		source = params.get('source')	
 
+		print ("confirmCreateAttendance")
+
+		submitResultURL = self.appControllers.urlToConfirmSubmit(request, AppViews.path)
+		attendance_id = self.appControllers.createAttendanceObject(request)
 		templateDictionary = self.templateResponseDictionary(request)
-		templateDictionary['text'] = 'Your attendance check has been sent to every student, source = ' \
-			+ source
+
+		if (attendance_id):
+			context = self.appControllers.contextForConfirmCreateAttendanceHTML(question, submitResultURL, attendance_id)
+		else:	
+			templateDictionary['text'] = 'Your attendance check has been sent to every student, source = ' \
+				+ source
 
 		return JsonResponse(templateDictionary)
 

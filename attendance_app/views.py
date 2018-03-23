@@ -13,11 +13,18 @@ question = "What is 1 + 1"
 answer = "2"
 
 class AppControllers:
-	def submitUrlToConfirmForm(self, request, path):
-		params = request.GET or request.POST
+	def urlToConfirmCreateAttendance(self, request, path):
+		params = request.GET
 		source = params.get('source')
 		submitURL = request.scheme + "://" + request.get_host() + AppViews.path \
 			+ '/confirm_create_attendance?source=' + str(source)
+		return submitURL
+
+	def urlToConfirmSubmit(self, request, path):
+		params = request.GET
+		source = params.get('source')
+		submitURL = request.scheme + "://" + request.get_host() + AppViews.path \
+			+ '/confirm_submit?source=' + str(source)
 		return submitURL
 
 	def userProfileFromRequest(self, requestParam):
@@ -35,15 +42,29 @@ class AppControllers:
 		instructor = UserProfile.objects.createUserProfile(user_prof)
 		return instructor
 
-	def contextForCreateHTML(self, instructor, submitURL):
+	def createAttendanceObject(self, request):
+		requestParam = request.GET or request.POST
+		username = requestParam.get('username')
+		chat_url = requestParam.get('chat_url')
+		instructor = UserProfile.objects.hasUserWithRole(username, chat_url, 'instructor')
+		if (instructor):
+			attendanceID = Attendance.objects.createAttendance(instructor, timezone.now())
+			return attendanceID
+		else:	
+			return None
+
+	def contextForCreateAttendanceHTML(self, instructor, submitURL):
 		context = {"submitURL" : submitURL, 
 					"username" : instructor.username, 
 					"chat_url" : instructor.chat_url}
 		return context
 
- 
+	def contextForConfirmCreateAttendanceHTML(self, question, submitResultURL, attendance_id):
+		context = {"question" : question, "submitResultURL" : submitResultURL, "attendance_id" : attendance_id}
+		return context
+
 class AppViews:
-	path = '/attendance_app/html/'
+	path = '/attendance_app/html'
 	def __init__(self):
 		self.question = "What is 1 + 1"
 		self.answer = "2"		
@@ -52,10 +73,9 @@ class AppViews:
 
 	#@csrf_exempt	
 	def createAttendance(self, request):
-		#html = loader.get_template(self.viewPath + "create.html")
-		submitURL = self.appControllers.submitUrlToConfirmForm(request, AppViews.path)
+		submitURL = self.appControllers.urlToConfirmCreateAttendance(request, AppViews.path)
 		instructor = self.appControllers.createUserProfileIfNeeded(request)
-		context = self.appControllers.contextForCreateHTML(instructor, submitURL)
+		context = self.appControllers.contextForCreateAttendanceHTML(instructor, submitURL)
 		response = HttpResponse(render(request, self.viewPath + "create.html", context))
 
 		return response
@@ -63,18 +83,11 @@ class AppViews:
 	# Create your views here.
 	#@csrf_exempt
 	def confirmCreateAttendance(self, request): 
-		#print (request.get_full_path())
-		submitResultURL = request.scheme  + "://" + request.get_host() + AppViews.path + '/submitResult'
+		submitResultURL = self.appControllers.urlToConfirmSubmit(request, AppViews.path)
+		attendance_id = self.appControllers.createAttendanceObject(request)
 
-		requestParam = request.GET or request.POST
-		#print(requestParam)
-		username = requestParam.get('username')
-		chat_url = requestParam.get('chat_url')
-		instructor = UserProfile.objects.hasUserWithRole(username, chat_url, 'instructor')
-		if (instructor):
-			attendanceID = Attendance.objects.createAttendance(instructor, timezone.now())
-			context = {"question" : question, "submitResultURL" : submitResultURL, "attendance_id" : attendanceID}
-			#html = loader.get_template(self.viewPath + "question.html")		
+		if (attendance_id):
+			context = self.appControllers.contextForConfirmCreateAttendanceHTML(question, submitResultURL, attendance_id)
 			response = HttpResponse(render(request, self.viewPath + "question.html", context))
 			return response	
 		else:	
@@ -82,15 +95,8 @@ class AppViews:
 
 	#@csrf_exempt	
 	def confirmSubmit(self, request):
-		#print (request.content_type)
-		#print (request.POST)
-		#print (request.GET)
 		context = {}
-		#html = loader.get_template(self.viewPath + "confirm.html")
 		requestParam = request.POST or request.GET
-		#student = UserProfile.objects.createUserProfile(requestParam.get('username'), requestParam.get('chat_url'),
-		#													requestParam.get('first_name'), requestParam.get('last_name'),
-		#													requestParam.get('email'), timezone.now(), requestParam.get('role'))
 		attendance = Attendance.objects.getAttendanceByID(requestParam.get('attendance_id'))
 		if ((requestParam.get("confirm_ans") == self.answer) and 
 			attendance):		
