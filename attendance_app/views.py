@@ -18,6 +18,9 @@ class AppControllers:
 		source = params.get('source')
 		submitURL = request.scheme + "://" + request.get_host() + AppViews.path \
 			+ '/confirm_create_attendance?source=' + str(source)
+
+		# submitURL = AppViews.path \
+		# 	+ '/confirm_create_attendance?source=' + str(source)
 		return submitURL
 
 	def urlToConfirmSubmit(self, request, path):
@@ -71,7 +74,7 @@ class AppViews:
 		self.viewPath = "views/"
 		self.appControllers = AppControllers()
 
-	#@csrf_exempt	
+	@csrf_exempt	
 	def createAttendance(self, request):
 		submitURL = self.appControllers.urlToConfirmCreateAttendance(request, AppViews.path)
 		instructor = self.appControllers.createUserProfileIfNeeded(request)
@@ -81,7 +84,7 @@ class AppViews:
 		return response
 
 	# Create your views here.
-	#@csrf_exempt
+	@csrf_exempt
 	def confirmCreateAttendance(self, request): 
 		submitResultURL = self.appControllers.urlToConfirmSubmit(request, AppViews.path)
 		attendance_id = self.appControllers.createAttendanceObject(request)
@@ -93,7 +96,7 @@ class AppViews:
 		else:	
 			return HttpResponse('Only Registered instructors are allowed to use this feature.')
 
-	#@csrf_exempt	
+	@csrf_exempt	
 	def confirmSubmit(self, request):
 		context = {}
 		requestParam = request.POST or request.GET

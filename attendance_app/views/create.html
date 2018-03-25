@@ -1,11 +1,12 @@
 <html>
 <head>
+	{{submitURL}}
 	<style>
 	.button {
 	    background-color: #4CAF50; /* Green */
 	    border: none;
 	    color: white;
-	    padding: 15px 32px;
+	    padding: 10px 15px;
 	    text-align: center;
 	    text-decoration: none;
 	    font-size: 12px;
@@ -13,21 +14,14 @@
 	    cursor: pointer;
 	}
 	</style>
-
-
-<!-- 	<script type="text/javascript">
-		function callConfirmCreateAttendance(submitURL) {
-			console.log("hello world" + submitURL)
-		}
-	</script> -->
 	<script type="text/javascript">
-		function callConfirmCreateAttendance2(submitURL) {
-			console.log("hello world" + submitURL);
+		function callConfirmCreateAttendance2() {
 		}
 
-		function callConfirmCreateAttendance(submitURL) {
-			submitURL = "http://www.google.com"
-            console.log("hello world 2" + submitURL);
+		function callConfirmCreateAttendance() {
+			mySubmitURL = "{{submitURL}}"
+			// submitURL = "https://www.w3schools.com/howto/img_fjords.jpg"
+            console.log("hello world 2" + mySubmitURL);
             if (window.XMLHttpRequest) {
     			// code for modern browsers
     			xhttp = new XMLHttpRequest();
@@ -36,19 +30,15 @@
     			xhttp = new ActiveXObject("Microsoft.XMLHTTP");
 			}
 
-    		xhttp.open("POST", submitURL, true);
+    		xhttp.open("POST", mySubmitURL, true);
     		xhttp.setRequestHeader("Content-type", "application/json");
     		xhttp.send();
-    		// var response = JSON.parse(xhttp.responseText;
     	}
 	</script>
 </head>
 <body>
 <b> Welcome to Attendance Checker </b>
-<button onclick=callConfirmCreateAttendance2("{{submitURL}}")>Click me</button>
-<button onclick=callConfirmCreateAttendance("{{submitURL}}")>Click me</button>
-
-<button class="button">Create Attendance Check</button>
+<button onclick=callConfirmCreateAttendance()>Create Attendance Check</button>
 </body>
 </html>
 
