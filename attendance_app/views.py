@@ -16,8 +16,8 @@ class AppControllers:
 	def urlToConfirmCreateAttendance(self, request, path):
 		params = request.GET
 		source = params.get('source')
-		submitURL = request.scheme + "://" + request.get_host() + AppViews.path \
-			+ '/confirm_create_attendance?source=' + str(source)
+		submitURL = request.scheme + "://" + request.get_host() + "/" + AppViews.path \
+			+ 'confirm_create_attendance?source=' + str(source)
 
 		# submitURL = AppViews.path \
 		# 	+ '/confirm_create_attendance?source=' + str(source)
@@ -26,8 +26,8 @@ class AppControllers:
 	def urlToConfirmSubmit(self, request, path):
 		params = request.GET
 		source = params.get('source')
-		submitURL = request.scheme + "://" + request.get_host() + AppViews.path \
-			+ '/confirm_submit?source=' + str(source)
+		submitURL = request.scheme + "://" + request.get_host() + "/" + AppViews.path \
+			+ 'confirm_submit?source=' + str(source)
 		return submitURL
 
 	def userProfileFromRequest(self, requestParam):
@@ -67,12 +67,18 @@ class AppControllers:
 		return context
 
 class AppViews:
-	path = '/attendance_app/html'
+	path = 'attendance_app/html/'
+
 	def __init__(self):
 		self.question = "What is 1 + 1"
 		self.answer = "2"		
 		self.viewPath = "views/"
 		self.appControllers = AppControllers()
+
+		self.createAttendancePath = 'create_attendance'
+		self.confirmCreateAttendancePath = 'confirm_create_attendance'
+		self.confirmSubmitPath = 'confirm_submit'
+		self.viewAttendancePath = 'view_attendance'
 
 	@csrf_exempt	
 	def createAttendance(self, request):
@@ -104,9 +110,9 @@ class AppViews:
 		if ((requestParam.get("confirm_ans") == self.answer) and 
 			attendance):		
 				context['confirmResult'] = "Success!"
-				tempProfile = self.userProfileFromRequest(requestParam)
+				tempProfile = self.appControllers.userProfileFromRequest(requestParam)
 				submission = AttendanceSubmit.objects.createAttendanceSubmit(attendance = attendance,  
-																				tempProfile = self.userProfileFromRequest(requestParam))
+																				tempProfile = tempProfile)
 		else:
 			context['confirmResult'] = "Attendance check fail, please contact the instructor."	
 
