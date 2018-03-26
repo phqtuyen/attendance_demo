@@ -7,6 +7,9 @@ from .serializers import UserSerializer, GroupSerializer, CreateFormSerializer
 from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from .views import *
+import htmlmin
+
+
 # viewsets: create, edit, delete, post, get, list
 #1. welcome user to create attendance
 #2. create attendance
@@ -43,9 +46,9 @@ class APIViews:
 		response = HttpResponse(render(request, self.rocketPath + "create.html", context))
 
 		html_value = response.getvalue().decode("utf-8")
-
+		minified_html_value = htmlmin.minify(html_value, remove_empty_space=True)
 		templateDictionary = self.templateResponseDictionary(request)
-		templateDictionary['text'] = html_value
+		templateDictionary['text'] = minified_html_value
 		
 		return JsonResponse(templateDictionary)
 
