@@ -16,8 +16,8 @@ class AppControllers:
 	def urlToConfirmCreateAttendance(self, request, path):
 		params = request.GET
 		source = params.get('source')
-		submitURL = request.scheme + "://" + request.get_host() + AppViews.path \
-			+ '/confirm_create_attendance?source=' + str(source)
+		submitURL = request.scheme + "://" + request.get_host() + "/" + AppViews.path \
+			+ 'confirm_create_attendance?source=' + str(source)
 
 		# submitURL = AppViews.path \
 		# 	+ '/confirm_create_attendance?source=' + str(source)
@@ -26,8 +26,8 @@ class AppControllers:
 	def urlToConfirmSubmit(self, request, path):
 		params = request.GET
 		source = params.get('source')
-		submitURL = request.scheme + "://" + request.get_host() + AppViews.path \
-			+ '/confirm_submit?source=' + str(source)
+		submitURL = request.scheme + "://" + request.get_host() + "/" + AppViews.path \
+			+ 'confirm_submit?source=' + str(source)
 		return submitURL
 
 	def userProfileFromRequest(self, requestParam):
@@ -67,12 +67,18 @@ class AppControllers:
 		return context
 
 class AppViews:
-	path = '/attendance_app/html'
+	path = 'attendance_app/html/'
+
 	def __init__(self):
 		self.question = "What is 1 + 1"
 		self.answer = "2"		
 		self.viewPath = "views/"
 		self.appControllers = AppControllers()
+
+		self.createAttendancePath = 'create_attendance'
+		self.confirmCreateAttendancePath = 'confirm_create_attendance'
+		self.confirmSubmitPath = 'confirm_submit'
+		self.viewAttendancePath = 'view_attendance'
 
 	@csrf_exempt	
 	def createAttendance(self, request):
@@ -104,9 +110,9 @@ class AppViews:
 		if ((requestParam.get("confirm_ans") == self.answer) and 
 			attendance):		
 				context['confirmResult'] = "Success!"
-				tempProfile = self.userProfileFromRequest(requestParam)
+				tempProfile = self.appControllers.userProfileFromRequest(requestParam)
 				submission = AttendanceSubmit.objects.createAttendanceSubmit(attendance = attendance,  
-																				tempProfile = self.userProfileFromRequest(requestParam))
+																				tempProfile = tempProfile)
 		else:
 			context['confirmResult'] = "Attendance check fail, please contact the instructor."	
 
@@ -129,4 +135,62 @@ class AppViews:
 
 	# print(response.getvalue())
 	# return response	
+
+
+
+# viewsets: create, edit, delete, post, get, list
+#1. welcome user to create attendance
+#2. create attendance
+#3. allow student to check attendance
+#4. list all attendances 
+#5. list all checks of an attendance
+#6. http://www.django-rest-framework.org/api-guide/views/
+
+class APIViews:
+	def __init__(self):
+		self.data = ''
+
+	@csrf_exempt	
+	def createAttendance(self, request):
+		view = AppViews()
+		response = view.createForm(request)
+		html_value = response.getvalue().decode("utf-8")
+		print('hi')
+		return JsonResponse({
+				'key': 'create_attendance', 
+				'html': response.getvalue().decode("utf-8") 
+			})
+
+	@csrf_exempt
+	def confirmCreateAttendance(self, request):
+		# TODO: Need to create an attendance in database
+		return JsonResponse({
+				'key': 'confirm_create_attendance',
+				'attendance_id': 'NULL'
+			})
+
+	@csrf_exempt
+	def confirmSubmit(self, request):
+		# TODO: Need to create an attendance submit in database
+
+		view = AppViews()
+		response = view.submitResult(request)
+		html_value = response.getvalue().decode("utf-8")
+
+		return JsonResponse({
+				'key': 'confirm_submit',
+				'html': html_value
+			})	
+
+	@csrf_exempt
+	def viewAttendance(self, request):
+		view = AppViews()
+		response = view.view(request)
+		html_value = response.getvalue().decode("utf-8")
+
+		return JsonResponse({
+				'key': 'view_attendance',
+				'html': html_value
+			})	
+
 
