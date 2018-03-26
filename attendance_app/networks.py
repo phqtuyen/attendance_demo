@@ -4,6 +4,7 @@ from attendance_app.rc_return_obs import RCErrDomain
 # Instructions on using requests: http://docs.python-requests.org/en/latest/user/quickstart/
 
 class RocketSetting:
+	API_PATH = "api/v1/"
 	url = ""
 	auth_token = ""
 	user_id = ""

@@ -63,6 +63,17 @@ class APIViews:
 		username = 'attendance'
 		password = 'attendance'
 
+		params = request.GET
+		source = params.get('source')
+		rocket_setting = RocketSetting()
+		rocket_setting.url = source + RocketSetting.API_PATH
+
+		rocket_api = RocketUsersAPI()
+		login_result = rocket_api.login(username, password)
+
+		rocket_attendance_uid = rocket_setting.get_uid()
+		rocket_attendance_auth_token = rocket_setting.get_auth_token()
+
 		print ("confirmCreateAttendance")
 
 		submitResultURL = self.appControllers.urlToConfirmSubmit(request, AppViews.path)
