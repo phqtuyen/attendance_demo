@@ -197,4 +197,18 @@ class TestRocketUsersAPI(TestCase):
         self.assertNotEqual(r.get_channel, "")
         #print(r.json().get('message'))
 
-    #def test_post_message_wrong_acc(self):
+    def test_post_message_wrong_acc(self):
+        faulty_setting = RocketSet(auth_token='asdasd',user_id='wqeqwe')
+        faulty_api = RocketUsersAPI(faulty_setting)
+        channel = 'general'
+        text = 'hello world'
+        res_obj = faulty_api.post_message(channel, text)
+        err = res_obj.get_err()
+        self.check_err_obj(err, res_obj)        
+
+    def test_post_message_wrong_chan(self):
+        channel = 'genera'
+        text = 'hello world'
+        r = self.rc_user_api.post_message(channel, text)
+        err = r.get_err()
+        self.check_err_obj(err, r)

@@ -89,7 +89,7 @@ class RocketUsersAPI:
 					'Content-type'	:	'application/json'}
 		payload = {'channel' : channel, 'text' : text}
 		post_message_url = self.url + 'chat.postMessage'
-		response = requests.post(post_message_url, headers = headers, json = payload).json()
+		response = requests.post(post_message_url, headers = headers, json = payload)
 		r = response.json()
 		obj = RCReturnObs(False)
 		if (RCErrDomain.is_rclogic_err(response.status_code)):
