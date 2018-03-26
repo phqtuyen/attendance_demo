@@ -43,6 +43,7 @@ class APIViews:
 		instructor = self.appControllers.createUserProfileIfNeeded(request)
 		context = self.appControllers.contextForCreateAttendanceHTML(instructor, submitURL)
 
+		# TODO: Push to Rocket.Chat API
 		response = HttpResponse(render(request, self.rocketPath + "create.html", context))
 
 		html_value = response.getvalue().decode("utf-8")
@@ -54,8 +55,11 @@ class APIViews:
 
 	@csrf_exempt
 	def confirmCreateAttendance(self, request):
-		# TODO: Need to create an attendance in database
-		# TODO: How to deal with username + password from rocket.chat
+		# TODO: Login with username, password
+		#   Get list of users
+		#   Send question.html to list of users
+		#   Send view.html to teacher
+
 		username = 'attendance'
 		password = 'attendance'
 
