@@ -72,8 +72,7 @@ class APIViews:
 		if (attendance_id):
 			context = self.appControllers.contextForConfirmCreateAttendanceHTML(question, submitResultURL, attendance_id)
 		else:	
-			templateDictionary['text'] = 'Your attendance check has been sent to every student, source = ' \
-				+ source
+			templateDictionary['text'] = 'Your attendance check has been sent to every student'
 
 		return JsonResponse(templateDictionary)
 
