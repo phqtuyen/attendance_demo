@@ -68,7 +68,8 @@ class RocketUsersAPI:
 				for json_obj in users:
 					temp = RCUserData(json_obj.get('_id'))
 					temp.config_user(json_obj.get('name'),
-										json_obj.get('username'))
+										json_obj.get('username')) \
+						.config_roles(json_obj.get('roles'))
 					obj.add_user(temp)
 			else :
 				err = RCReturnObsErr().config_domain(RCErrDomain.LOGIC_DOMAIN) \
@@ -114,6 +115,38 @@ class RocketUsersAPI:
 			obj.config_err(err)
 		return obj	
 	
+	def get_user_by_username(self, username):
+		headers = {'X-Auth-Token' : self.auth_token, 'X-User-Id' : self.user_id}
+		params = {'username' : username}
+		get_url = self.url + 'users.info'
+		response = requests.get(get_url, headers = headers, params = params)
+		r = response.json()
+		obj = RCReturnObs(False)
+		if (RCErrDomain.is_rclogic_err(response.status_code)):
+			is_success = r.get('success')
+			user = r.get('user') 	    
+			print("is_success: %s", is_success)			
+			if (is_success and user):	    
+				temp = RCUserData(user.get('_id'))
+				temp.config_user(user.get('name'),
+								user.get('username')) \
+						.config_roles(user.get('roles'))
+				obj = RCUserInfoReturn(is_success, temp)
+			else :
+				err = RCReturnObsErr().config_domain(RCErrDomain.LOGIC_DOMAIN) \
+										.config_code(RCErrDomain.LOGIC_CODE) \
+										.config_msg(RCErrDomain.NULL_DATA)
+				obj.config_err(err)				    
+		else:
+			err = self.config_err_obj(response)
+			print(response.status_code)
+			obj.config_err(err)			
+		
+		print("return obj: %s", obj)
+
+		return obj		
+
+		
 
 	def login(self, username, password):
 		payload = {'username' : username, 'password' : password}
