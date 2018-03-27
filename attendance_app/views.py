@@ -13,7 +13,7 @@ question = "What is 1 + 1"
 answer = "2"
 
 class AppControllers:
-	
+
 	def urlToConfirmCreateAttendance(self, request, path):
 		params = request.GET
 		source = params.get('source')

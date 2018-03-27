@@ -94,8 +94,7 @@ class UserProfile(models.Model):
         self.email = tempProfile.email
         self.role = tempProfile.role
         self.created_on = tempProfile.created_on or timezone.now()
-        #if (tempProfile.created_on) : created_on = tempProfile.created_on 
-        #else:   created_on = timezone.now()    
+
         return self
 
     def __str__(self):
@@ -103,7 +102,7 @@ class UserProfile(models.Model):
 
 class AttendanceManager(models.Manager):
     def createAttendance(self, created_by, created_on):
-        attendance=self.create(created_by = created_by,
+        attendance = self.create(created_by = created_by,
                                 created_on = created_on)
         return attendance.id
 
@@ -132,12 +131,15 @@ class AttendanceSubmitManager(models.Manager):
         attendanceSubmit = self.create(attendance = attendance, 
                                         submitted_on = timezone.now(), 
                                         submitted_by = submitted_by)
+        attendanceSubmit.save()
+
         return attendanceSubmit.id
 
     def createAttSubmit(self, attendance, submitted_on, submitted_by):
         submission = self.create(attendance = attendance, 
                                     submitted_on = submitted_on, 
                                     submitted_by = submitted_by)   
+        attendanceSubmit.save()
         return submission.id
 
     def getSubmissionList(self, attendance):
@@ -163,3 +165,25 @@ class RocketAPIAuthentication(models.Model):
     rocket_chat_user_id = models.CharField(max_length = 100)
     rocket_chat_auth_token = models.CharField(max_length = 150)
     rocket_chat_url = models.CharField(max_length = 255)
+
+    objects = RocketAPIAuthenticationManager()
+
+class RocketAPIAuthenticationManager(models.Model):
+    def createRocketAPIAuth(self, url, user_id, auth_token):
+        api_authentication = self.create(rocket_chat_url = url, 
+                                    rocket_chat_user_id = user_id, 
+                                    rocket_chat_auth_token = auth_token)   
+        api_authentication.save()
+        return api_authentication.id
+
+
+    def getRocketAPIAuth(self, url):
+        try:
+            api_authentication = RocketAPIAuthentication.objects.get(rocket_chat_url__exact = url)
+            return api_authentication
+        except MultipleObjectsReturned:
+            print ("More than one objects with the same username and chat_url.")
+            return None
+        except ObjectDoesNotExist:
+            print ("Object does not exist.")
+            return None   

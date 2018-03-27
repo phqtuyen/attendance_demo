@@ -65,16 +65,23 @@ class APIViews:
 
 		params = request.GET
 		source = params.get('source')
+    
+        api_authentication = RocketAPIAuthentication.objects.getRocketAPIAuth(source)
 		rocket_setting = RocketSetting()
 		rocket_setting.url = source + RocketSetting.API_PATH
 
-		rocket_api = RocketUsersAPI()
-		login_result = rocket_api.login(username, password)
+        if api_authentication.rocket_chat_user_id != None:
+        	rocket_setting.user_id = api_authentication.rocket_chat_user_id
+        
+        if api_authentication.rocket_chat_auth_token != None:
+        	rocket_setting.auth_token = api_authentication.rocket_chat_auth_token        
 
-		rocket_attendance_uid = rocket_setting.get_uid()
-		rocket_attendance_auth_token = rocket_setting.get_auth_token()
+        if rocket_setting.user_id == None || rocket_setting.auth_token == None:
+			rocket_api = RocketUsersAPI()
+			login_result = rocket_api.login(username, password)
 
-		print ("confirmCreateAttendance")
+			rocket_setting.user_id = login_result.get_uid()
+			rocket_setting.auth_token = login_result.get_auth_token()
 
 		submitResultURL = self.appControllers.urlToConfirmSubmit(request, AppViews.path)
 		attendance_id = self.appControllers.createAttendanceObject(request)
