@@ -72,13 +72,13 @@ class UserProfile(models.Model):
         return self
 
     def configName(self, first_name, last_name):
-        self.first_name = first_name
-        self.last_name = last_name
+        self.first_name = first_name or ""
+        self.last_name = last_name or ""
         return self    
         
     def configEmail(self, email, role):
-        self.email = email
-        self.role = role
+        self.email = email or ""
+        self.role = role or ""
         return self
 
     def configCreatedOn(self, created_on):
@@ -89,7 +89,7 @@ class UserProfile(models.Model):
         return self    
 
     def configFromProfile(self, tempProfile):
-        self.first_name = tempProfile.first_name
+        self.first_name = tempProfile.first_name 
         self.last_name = tempProfile.last_name
         self.email = tempProfile.email
         self.role = tempProfile.role
@@ -127,13 +127,15 @@ class AttendanceSubmitManager(models.Manager):
     def createAttendanceSubmit(self, attendance, tempProfile):
 
         submitted_by = UserProfile.objects.createUserProfile(tempProfile) 
+        submitted_by_list = self.student_submitted(submitted_by, attendance)
+        if (not submitted_by_list):
+            attendanceSubmit = self.create(attendance = attendance, 
+                                            submitted_on = timezone.now(), 
+                                            submitted_by = submitted_by)
+            attendanceSubmit.save()
+            return attendanceSubmit.id
 
-        attendanceSubmit = self.create(attendance = attendance, 
-                                        submitted_on = timezone.now(), 
-                                        submitted_by = submitted_by)
-        attendanceSubmit.save()
-
-        return attendanceSubmit.id
+        return submitted_by_list[0].id            
 
     def createAttSubmit(self, attendance, submitted_on, submitted_by):
         submission = self.create(attendance = attendance, 
@@ -141,6 +143,18 @@ class AttendanceSubmitManager(models.Manager):
                                     submitted_by = submitted_by)   
         attendanceSubmit.save()
         return submission.id
+
+    def student_submitted(self, submitted_by, attendance):
+        try :
+            submissionList = self.filter(submitted_by__id__exact = submitted_by.id,
+                                            attendance__id__exact = attendance.id)
+            if (not submissionList):
+                return None
+            else:
+                return submissionList    
+        except Exception:
+            print (Exception)    
+            return None        
 
     def getSubmissionList(self, attendance):
         try :
@@ -159,16 +173,7 @@ class AttendanceSubmit(models.Model):
     submitted_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
     objects = AttendanceSubmitManager()
 
-            
-
-class RocketAPIAuthentication(models.Model):
-    rocket_chat_user_id = models.CharField(max_length = 100)
-    rocket_chat_auth_token = models.CharField(max_length = 150)
-    rocket_chat_url = models.CharField(max_length = 255)
-
-    objects = RocketAPIAuthenticationManager()
-
-class RocketAPIAuthenticationManager(models.Model):
+class RocketAPIAuthenticationManager(models.Manager):
     def createRocketAPIAuth(self, url, user_id, auth_token):
         api_authentication = self.create(rocket_chat_url = url, 
                                     rocket_chat_user_id = user_id, 
@@ -186,4 +191,37 @@ class RocketAPIAuthenticationManager(models.Model):
             return None
         except ObjectDoesNotExist:
             print ("Object does not exist.")
-            return None   
+            return None               
+
+class RocketAPIAuthentication(models.Model):
+    rocket_chat_user_id = models.CharField(max_length = 100)
+    rocket_chat_auth_token = models.CharField(max_length = 150)
+    rocket_chat_url = models.CharField(max_length = 255)
+
+    objects = RocketAPIAuthenticationManager()
+
+    def get_user_id(self):
+        return self.rocket_chat_user_id
+
+    def get_auth_token(self):
+        return self.rocket_chat_auth_token
+
+    def get_url(self):
+        return self.rocket_chat_url
+
+    def set_user_id(self, uid):
+        self.rocket_chat_user_id = uid
+        #self.save()
+        return self
+
+    def set_auth_token(self, token):
+        self.rocket_chat_auth_token = token
+        #self.save()
+        return self
+
+    def set_url(self, url):
+        self.rocket_chat_url = url
+        #self.save()
+        return self
+
+
