@@ -111,7 +111,6 @@ class APIViews:
 			else:
 				print('Fail to obtain users list.')
 		return HttpResponse()		
-
 		
 	@csrf_exempt
 	def confirmCreateAttendance(self, request):
@@ -136,11 +135,12 @@ class APIViews:
 				else:	
 					#print('came here')
 					res_html_student = self.format_html(res[1])
-					channels = list(filter(lambda user : not (admin in user.roles), users))
-					#print(list(channels))
-					channels = list(map(lambda user : user._id, channels))
-					#print("student channels ", channels)
-					responses = list(map(lambda channel : rc_api.post_message(text = res_html_student, channel = channel), channels))
+					channels = []
+					for user in users:
+						channels.append(user._id)
+					print("student channels ", channels)
+					responses = rc_api.post_message(text = res_html_student, channel = channels)
+					#print (responses)
 					res_html_instructor = self.format_html(self.app_view.viewAttendance(request, {'attendance_id' : res[0]}))
 					instructor_channel = next(filter(lambda user, instructor_username = instructor_username : user.username == instructor_username, users), '')
 					#print("instructor channel" ,instructor_channel.username)

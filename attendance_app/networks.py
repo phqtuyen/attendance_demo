@@ -2,6 +2,7 @@ import requests
 from attendance_app.rc_return_obs import *
 from attendance_app.rc_return_obs import RCErrDomain
 # Instructions on using requests: http://docs.python-requests.org/en/latest/user/quickstart/
+import json
 
 class RocketSetting:
 	API_PATH = "api/v1/"
@@ -90,9 +91,12 @@ class RocketUsersAPI:
 					'X-User-Id' : self.user_id,
 					'Content-type'	:	'application/json'}
 		payload = {'channel' : channel, 'text' : text}
+		payload = json.dumps(payload)
 		post_message_url = self.url + 'chat.postMessage'
-		response = requests.post(post_message_url, headers = headers, json = payload)
+		response = requests.post(post_message_url, headers = headers, data = payload)
+		print("payload: ",payload)
 		r = response.json()
+		print("response", r)
 		obj = RCReturnObs(False)
 		if (RCErrDomain.is_rclogic_err(response.status_code)):
 			is_success = r.get('success')
