@@ -1,3 +1,8 @@
+# Main Controller of the backend
+# determine application logic from each url
+# Authors : Tuyen, Khang
+# Last Date: 29/03/2018 
+
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseServerError
 from django.template import loader, RequestContext
@@ -111,13 +116,9 @@ class APIViews:
 			else:
 				print('Fail to obtain users list.')
 		return HttpResponse()		
-		
+
 	@csrf_exempt
 	def confirmCreateAttendance(self, request):
-		# TODO: Login with username, password
-		#   Get list of users
-		#   Send question.html to list of users
-		#   Send view.html to teacher
 		params = request.POST
 		instructor_username = params.get('username')
 		print(instructor_username)
@@ -127,6 +128,7 @@ class APIViews:
 			response = rc_api.get_users()
 			if (response.is_success()):
 				users = response.get_users()
+				users = list(filter(lambda user : user.name != None and user.username != None, users))
 				res = self.app_view.confirmCreateAttendance(request)
 				if (not res[0]):
 					res_html = self.format_html(res[1])
@@ -135,9 +137,7 @@ class APIViews:
 				else:	
 					#print('came here')
 					res_html_student = self.format_html(res[1])
-					channels = []
-					for user in users:
-						channels.append(user._id)
+					channels = list(map(lambda user : user._id, users))
 					print("student channels ", channels)
 					responses = rc_api.post_message(text = res_html_student, channel = channels)
 					#print (responses)
