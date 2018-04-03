@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse,  HttpResponseServerError
 from django.template import loader, RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
@@ -13,11 +13,13 @@ question = "What is 1 + 1"
 answer = "2"
 
 class AppControllers:
+
 	def urlToConfirmCreateAttendance(self, request, path):
 		params = request.GET
 		source = params.get('source')
+		username = params.get('username')
 		submitURL = request.scheme + "://" + request.get_host() + "/" + AppViews.path \
-			+ 'confirm_create_attendance?source=' + str(source)
+			+ 'confirm_create_attendance?source=' + str(source) + 'username=' + str(username)
 
 		# submitURL = AppViews.path \
 		# 	+ '/confirm_create_attendance?source=' + str(source)
@@ -97,10 +99,12 @@ class AppViews:
 
 		if (attendance_id):
 			context = self.appControllers.contextForConfirmCreateAttendanceHTML(question, submitResultURL, attendance_id)
-			response = HttpResponse(render(request, self.viewPath + "question.html", context))
-			return response	
-		else:	
-			return HttpResponse('Only Registered instructors are allowed to use this feature.')
+			#response = HttpResponse(render(request, self.viewPath + "question.html", context))
+			#return response
+			return (attendance_id ,render(request, self.viewPath + "question.html", context))	
+		else:
+			#return 'Only Registered instructors are allowed to use this feature.'	
+			return  (attendance_id, HttpResponseServerError('Fail to create attendance.'))
 
 	@csrf_exempt	
 	def confirmSubmit(self, request):
@@ -118,10 +122,11 @@ class AppViews:
 
 		return HttpResponse(render(request, self.viewPath + "confirm.html", context))	
 
-	def viewAttendance(self,request):
-		requestParam = request.GET or request.POST
+	def viewAttendance(self,request, params = {}):
+		requestParam = params or request.GET or request.POST
 		context = {}
 		attendance = Attendance.objects.getAttendanceByID(requestParam.get('attendance_id'))
+		#print (attendance.id)
 		if (attendance):
 			submissionList = AttendanceSubmit.objects.getSubmissionList(attendance)
 			context['submission_list'] = submissionList
@@ -129,6 +134,7 @@ class AppViews:
 			return HttpResponse(render(request, self.viewPath + "view.html", context))
 		else:
 			return HttpResponse("No such attendance.")	
+			
 	def test_output(self,request):
 		ob = test_class()
 		return HttpResponse(ob.test_print())

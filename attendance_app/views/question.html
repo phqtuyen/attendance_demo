@@ -1,6 +1,6 @@
 <h1> Welcome to Attendance Checker </h1>
 
-<p> Please answer the following question to confirm your attendance </p>
+<p> Please enter your answer to confirm the attendance </p>
 
 <form action={{submitResultURL}} method="post"> {% csrf_token %}
 	Question: {{question}}? <input type="text" name="confirm_ans"><br>

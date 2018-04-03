@@ -3,10 +3,16 @@ class RCUserData:
 		self._id = _id
 		self.name = ""
 		self.username = ""
+		self.roles = []
 
 	def config_user(self, name, username):
 		self.name = name
 		self.username = username	
+		return self
+
+	def config_roles(self, roles):
+		self.roles = roles
+		return self
 
 class RCMessage:
 	def __init__(self, _id):
@@ -117,6 +123,11 @@ class RCLoginReturn(RCReturnObs):
 
 	def get_auth_token(self):
 		return self.auth_token
+
+class RCUserInfoReturn(RCReturnObs):		
+	def __init__(self, success ,user):
+		RCReturnObs.__init__(self, success)
+		self.user_data = user
 
 class RCPostMessReturn(RCReturnObs):
 	def __init__(self, success):
