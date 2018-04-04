@@ -100,15 +100,17 @@ class RocketUsersAPI:
 		obj = RCReturnObs(False)
 		if (RCErrDomain.is_rclogic_err(response.status_code)):
 			is_success = r.get('success')
-			msg = r.get('message')			
-			if (is_success and msg):
+			msgs = r.get('message')			
+			if (is_success and msgs):
 				obj = RCPostMessReturn(is_success)
-				temp_mess = RCMessage(msg.get('_id'))
-				temp_user = RCUserData(msg.get('u').get('_id'))
-				temp_user.config_user(msg.get('u').get('name'),
-									msg.get('u').get('username'))
-				temp_mess.config(msg.get('msg'), temp_user).config_rid(msg.get('rid'))
-				obj.config_msg(temp_mess).config_channel(r.get('channel'))
+				for msg in msgs:
+					temp_mess = RCMessage(msg.get('_id'))
+					temp_user = RCUserData(msg.get('u').get('_id'))
+					temp_user.config_user(msg.get('u').get('name'),
+										msg.get('u').get('username'))
+					temp_mess.config(msg.get('msg'), temp_user).config_rid(msg.get('rid'))
+					obj.add_msg(temp_mess)
+				obj.config_channel(r.get('channel'))
 			else :
 				err = RCReturnObsErr().config_domain(RCErrDomain.LOGIC_DOMAIN) \
 										.config_code(RCErrDomain.LOGIC_CODE) \

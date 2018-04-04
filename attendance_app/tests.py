@@ -87,6 +87,7 @@ class ViewTestCase(TestCase):
         #print(resp1.content)
 
     def test_submit_false(self):
+        print(self.URL + self.app_view.confirmCreateAttendancePath)
         resp1 = self.client.post(self.URL + self.app_view.confirmCreateAttendancePath, {'username' : 'u', 'chat_url' : 'u'})
         #print(resp1.content)
         self.assertEqual(resp1.status_code,200)

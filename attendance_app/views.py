@@ -101,10 +101,23 @@ class AppViews:
 			context = self.appControllers.contextForConfirmCreateAttendanceHTML(question, submitResultURL, attendance_id)
 			#response = HttpResponse(render(request, self.viewPath + "question.html", context))
 			#return response
+			return render(request, self.viewPath + "question.html", context)	
+		else:
+			#return 'Only Registered instructors are allowed to use this feature.'	
+			return  HttpResponse('Fail to create attendance.')
+
+	def confirmCreateAttendanceAPI(self, request): 
+		submitResultURL = self.appControllers.urlToConfirmSubmit(request, AppViews.path)
+		attendance_id = self.appControllers.createAttendanceObject(request)
+
+		if (attendance_id):
+			context = self.appControllers.contextForConfirmCreateAttendanceHTML(question, submitResultURL, attendance_id)
+			#response = HttpResponse(render(request, self.viewPath + "question.html", context))
+			#return response
 			return (attendance_id ,render(request, self.viewPath + "question.html", context))	
 		else:
 			#return 'Only Registered instructors are allowed to use this feature.'	
-			return  (attendance_id, HttpResponseServerError('Fail to create attendance.'))
+			return  (attendance_id, HttpResponseServerError('Fail to create attendance.'))	
 
 	@csrf_exempt	
 	def confirmSubmit(self, request):
@@ -152,51 +165,51 @@ class AppViews:
 #5. list all checks of an attendance
 #6. http://www.django-rest-framework.org/api-guide/views/
 
-class APIViews:
-	def __init__(self):
-		self.data = ''
+# class APIViews:
+# 	def __init__(self):
+# 		self.data = ''
 
-	@csrf_exempt	
-	def createAttendance(self, request):
-		view = AppViews()
-		response = view.createForm(request)
-		html_value = response.getvalue().decode("utf-8")
-		print('hi')
-		return JsonResponse({
-				'key': 'create_attendance', 
-				'html': response.getvalue().decode("utf-8") 
-			})
+# 	@csrf_exempt	
+# 	def createAttendance(self, request):
+# 		view = AppViews()
+# 		response = view.createForm(request)
+# 		html_value = response.getvalue().decode("utf-8")
+# 		print('hi')
+# 		return JsonResponse({
+# 				'key': 'create_attendance', 
+# 				'html': response.getvalue().decode("utf-8") 
+# 			})
 
-	@csrf_exempt
-	def confirmCreateAttendance(self, request):
-		# TODO: Need to create an attendance in database
-		return JsonResponse({
-				'key': 'confirm_create_attendance',
-				'attendance_id': 'NULL'
-			})
+# 	@csrf_exempt
+# 	def confirmCreateAttendance(self, request):
+# 		# TODO: Need to create an attendance in database
+# 		return JsonResponse({
+# 				'key': 'confirm_create_attendance',
+# 				'attendance_id': 'NULL'
+# 			})
 
-	@csrf_exempt
-	def confirmSubmit(self, request):
-		# TODO: Need to create an attendance submit in database
+# 	@csrf_exempt
+# 	def confirmSubmit(self, request):
+# 		# TODO: Need to create an attendance submit in database
 
-		view = AppViews()
-		response = view.submitResult(request)
-		html_value = response.getvalue().decode("utf-8")
+# 		view = AppViews()
+# 		response = view.submitResult(request)
+# 		html_value = response.getvalue().decode("utf-8")
 
-		return JsonResponse({
-				'key': 'confirm_submit',
-				'html': html_value
-			})	
+# 		return JsonResponse({
+# 				'key': 'confirm_submit',
+# 				'html': html_value
+# 			})	
 
-	@csrf_exempt
-	def viewAttendance(self, request):
-		view = AppViews()
-		response = view.view(request)
-		html_value = response.getvalue().decode("utf-8")
+# 	@csrf_exempt
+# 	def viewAttendance(self, request):
+# 		view = AppViews()
+# 		response = view.view(request)
+# 		html_value = response.getvalue().decode("utf-8")
 
-		return JsonResponse({
-				'key': 'view_attendance',
-				'html': html_value
-			})	
+# 		return JsonResponse({
+# 				'key': 'view_attendance',
+# 				'html': html_value
+# 			})	
 
 

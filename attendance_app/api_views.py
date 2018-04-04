@@ -129,7 +129,7 @@ class APIViews:
 			if (response.is_success()):
 				users = response.get_users()
 				users = list(filter(lambda user : user.name != None and user.username != None, users))
-				res = self.app_view.confirmCreateAttendance(request)
+				res = self.app_view.confirmCreateAttendanceAPI(request)
 				if (not res[0]):
 					res_html = self.format_html(res[1])
 					channels = map(lambda user : user._id, users)

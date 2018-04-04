@@ -132,11 +132,15 @@ class RCUserInfoReturn(RCReturnObs):
 class RCPostMessReturn(RCReturnObs):
 	def __init__(self, success):
 		RCReturnObs.__init__(self, success)
-		self.msg = None
-		self.channel = ""
+		self.msg = []
+		self.channel = []
 
 	def config_msg(self, msg):
 		self.msg = msg
+		return self
+
+	def add_msg(self, msg):
+		self.msg.append(msg)	
 		return self
 
 	def config_channel(self, channel):
