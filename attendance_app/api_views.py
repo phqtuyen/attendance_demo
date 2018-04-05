@@ -105,11 +105,17 @@ class APIViews:
 			rc_api = RocketUsersAPI(rocket_setting)
 			response = rc_api.get_user_by_username(instructor.username)
 			if (response.is_success()):
+				{"actionLinks": [{"icon": "icon-videocam", 
+								"label": "Submit", 
+								"method_id": "call_third_party_action", 
+								"params": "name=submit"},
+								{"icon": "icon-videocam", 
+								"label": "Cancel", 
+								"method_id": "call_third_party_action", 
+								"params": "name=cancel"}],
+								"actionParameters": {"action": "http://localhost:8000/attendance_app/confirm_create_attendance", 
+  								"method": "get"}}
 				rc_api.post_message(response.user_data._id, res_html)
-							#rc_api.pos_message()
-							# TODO: Push to Rocket.Chat) API
-				# else :
-				# 	print('instructor information not found.')
 			else:
 				print('Fail to obtain user id.')
 		return HttpResponse()		

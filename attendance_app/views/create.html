@@ -1,43 +1,6 @@
 <html>
-<head>
-	<style>
-	.button {
-	    background-color: #4CAF50; /* Green */
-	    border: none;
-	    color: white;
-	    padding: 10px 15px;
-	    text-align: center;
-	    text-decoration: none;
-	    font-size: 12px;
-	    margin: 4px 2px;
-	    cursor: pointer;
-	}
-	</style>
-	<script type="text/javascript">
-		function callConfirmCreateAttendance2() {
-		}
-
-		function callConfirmCreateAttendance() {
-			mySubmitURL = "{{submitURL}}"
-			// submitURL = "https://www.w3schools.com/howto/img_fjords.jpg"
-            console.log("hello world 2" + mySubmitURL);
-            if (window.XMLHttpRequest) {
-    			// code for modern browsers
-    			xhttp = new XMLHttpRequest();
- 			} else {
-    			// code for old IE browsers
-    			xhttp = new ActiveXObject("Microsoft.XMLHTTP");
-			}
-
-    		xhttp.open("POST", mySubmitURL, true);
-    		xhttp.setRequestHeader("Content-type", "application/json");
-    		xhttp.send();
-    	}
-	</script>
-</head>
 <body>
 <b> Welcome to Attendance Checker </b><br/>
-<button class="button" onclick=callConfirmCreateAttendance()>Create Attendance Check</button>
 </body>
 </html>
 
