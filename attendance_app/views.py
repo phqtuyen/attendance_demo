@@ -42,7 +42,7 @@ class AppControllers:
 
 	def createUserProfileIfNeeded(self, request):
 		requestParam = request.GET or request.POST
-		#print(requestParam)
+		print("param provided to create user profile:", requestParam)
 		user_prof = self.userProfileFromRequest(requestParam)
 		instructor = UserProfile.objects.createUserProfile(user_prof)
 		return instructor
