@@ -105,7 +105,7 @@ class APIViews:
 			rc_api = RocketUsersAPI(rocket_setting)
 			response = rc_api.get_user_by_username(instructor.username)
 			if (response.is_success()):
-				rc_api.post_message(response._id, res_html)
+				rc_api.post_message(response.user_data._id, res_html)
 							#rc_api.pos_message()
 							# TODO: Push to Rocket.Chat) API
 				# else :
