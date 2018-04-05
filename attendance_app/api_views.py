@@ -103,18 +103,15 @@ class APIViews:
 
 		if (rocket_setting):
 			rc_api = RocketUsersAPI(rocket_setting)
-			response = rc_api.get_users()
+			response = rc_api.get_user_by_username(instructor.username)
 			if (response.is_success()):
-				users = response.get_users()
-				instructor_user = next((user for user in users if user.username == instructor.username), None)
-				if (instructor_user) :
-					rc_api.post_message(instructor_user._id, res_html)
+				rc_api.post_message(response._id, res_html)
 							#rc_api.pos_message()
 							# TODO: Push to Rocket.Chat) API
-				else :
-					print('instructor information not found.')
+				# else :
+				# 	print('instructor information not found.')
 			else:
-				print('Fail to obtain users list.')
+				print('Fail to obtain user id.')
 		return HttpResponse()		
 
 	@csrf_exempt
