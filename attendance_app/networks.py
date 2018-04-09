@@ -54,8 +54,10 @@ class ActionParameters:
 		self.method = method	
 		self.optional = {}
 	def buildActionParameters(self):
-		return {ActionParameters.ACTION: self.action,
-				ActionParameters.METHOD: self.method}.update(self.optional)
+		temp = {ActionParameters.ACTION: self.action,
+				ActionParameters.METHOD: self.method}
+		temp.update(self.optional)
+		return temp		
 				
 	def config_optional(self, opt):
 		self.optional.update(opt)
