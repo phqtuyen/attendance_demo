@@ -16,6 +16,7 @@ import htmlmin
 from .networks import RocketSetting, RocketUsersAPI, ActionLinkPrep, ActionLinkBuilder, ActionParameters
 from .default_data.rocket_data import RCLoginDataDefault
 from attendance_app.models import RocketAPIAuthentication
+import random
 # viewsets: create, edit, delete, post, get, list
 #1. welcome user to create attendance
 #2. create attendance
@@ -54,7 +55,6 @@ class APIViews:
 		password = 'attendance'
 		api_authentication = RocketAPIAuthentication.objects.getRocketAPIAuth(source)
 		rocket_setting = RocketSetting()
-		#print(source)
 		rocket_setting.url = source + RocketSetting.API_PATH
 		if (api_authentication):
 			if api_authentication.rocket_chat_user_id != None:
@@ -126,7 +126,6 @@ class APIViews:
 	def confirmCreateAttendance(self, request):
 		params = request.POST
 		instructor_username = params.get('username')
-		print(instructor_username)
 		rocket_setting = self.authenticate(params)
 		if (rocket_setting):
 			rc_api = RocketUsersAPI(rocket_setting)
@@ -156,15 +155,14 @@ class APIViews:
 
 					act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_submit, "post")
 					source = request.GET.get('source')
-					act_params.config_optional({'source': source, 'username': instructor.username, 'answer': str(correct_answer)})
-												.buildActionParameters()
+					act_params.config_optional({'source': source, 'username': instructor.username, 'answer': str(correct_answer)}).buildActionParameters()
 
 					act_link_obj = ActionLinkBuilder(act_links = random_answers, 
 													act_params = act_params).buildObject()				
 
 					responses = rc_api.post_message(text = res_html_student, channel = channels)
 					#print (responses)
-					res_html_instructor = self.format_html(self.app_view.viewAttendance(request, {'attendance_id' : res[0], 'answer': }))
+					res_html_instructor = self.format_html(self.app_view.viewAttendance(request, {'attendance_id' : res[0], 'answer': str(correct_answer)}))
 					instructor_channel = next(filter(lambda user, instructor_username = instructor_username : user.username == instructor_username, users), '')
 					#print("instructor channel" ,instructor_channel.username)
 					response_instructor = rc_api.post_message(text = res_html_instructor, channel = instructor_channel._id)
