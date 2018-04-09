@@ -108,19 +108,11 @@ class APIViews:
 			response = rc_api.get_user_by_username(instructor.username)
 			if (response.is_success()):
 				#only pass param label
-				{"actionLinks": [{"icon": "icon-videocam", 
-								"label": "Submit", 
-								"method_id": "call_third_party_action", 
-								"params": "name=submit"},
-								{"icon": "icon-videocam", 
-								"label": "Cancel", 
-								"method_id": "call_third_party_action", 
-								"params": "name=cancel"}],
-				"actionParameters": {"action": self.buildURL(request) + APIViews.confirm_create_attendance, 
-  								"method": "get"}}
 				submit_link = ActionLinkPrep('Submit', 'name=submit').buildActionLink()
 				cancel_link = ActionLinkPrep('Cancel', 'name=cancel').buildActionLink()
-				act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_create_attendance, "post") \
+				act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_create_attendance, "post")
+				source = request.GET.get('source')
+				act_params.config_optional({'source': source, 'username': instructor.username})
 												.buildActionParameters()
 				act_link_obj = ActionLinkBuilder(act_links = [submit_link, cancel_link], 
 													act_params = act_params).buildObject()				

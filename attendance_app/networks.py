@@ -52,10 +52,14 @@ class ActionParameters:
 	def __init__(self, action, method):
 		self.action = action
 		self.method = method	
-
+		self.optional = {}
 	def buildActionParameters(self):
 		return {ActionParameters.ACTION: self.action,
-				ActionParameters.METHOD: self.method}
+				ActionParameters.METHOD: self.method}.update(self.optional)
+				
+	def config_optional(self, opt):
+		self.optional.update(opt)
+		return self			
 
 class ActionLinkBuilder:
 	ACTION_LINKS = 'actionLinks'
