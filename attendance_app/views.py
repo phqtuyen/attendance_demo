@@ -34,7 +34,7 @@ class AppControllers:
 
 	def userProfileFromRequest(self, requestParam):
 		tempProfile = UserProfile() \
-						.configID(requestParam.get('username'), requestParam.get('chat_url')) \
+						.configID(requestParam.get('username'), requestParam.get('source')) \
 						.configName(requestParam.get('first_name'), requestParam.get('last_name'))\
 						.configEmail(requestParam.get('email'), requestParam.get('role')) \
 						.configCreatedOn(None)
@@ -50,7 +50,7 @@ class AppControllers:
 	def createAttendanceObject(self, request):
 		requestParam = request.GET or request.POST
 		username = requestParam.get('username')
-		chat_url = requestParam.get('chat_url')
+		chat_url = requestParam.get('source')
 		instructor = UserProfile.objects.hasUserWithRole(username, chat_url, 'instructor')
 		if (instructor):
 			attendanceID = Attendance.objects.createAttendance(instructor, timezone.now())
@@ -143,6 +143,7 @@ class AppViews:
 		if (attendance):
 			submissionList = AttendanceSubmit.objects.getSubmissionList(attendance)
 			context['submission_list'] = submissionList
+			context['answer'] = params['answer']
 			print(submissionList)
 			return HttpResponse(render(request, self.viewPath + "view.html", context))
 		else:
