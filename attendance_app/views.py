@@ -143,6 +143,7 @@ class AppViews:
 		if (attendance):
 			submissionList = AttendanceSubmit.objects.getSubmissionList(attendance)
 			context['submission_list'] = submissionList
+			context['answer'] = params['answer']
 			print(submissionList)
 			return HttpResponse(render(request, self.viewPath + "view.html", context))
 		else:

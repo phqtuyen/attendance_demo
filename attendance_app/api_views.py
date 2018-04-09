@@ -159,12 +159,12 @@ class APIViews:
 
 					act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_submit, "post")
 					source = request.GET.get('source')
-					act_params.config_optional({'source': source, 'username': instructor.username, 'answer': str(correct_answer)}).buildActionParameters()
+					act_params.config_optional({'source': source, 'username': instructor_username, 'answer': str(correct_answer)}).buildActionParameters()
 
 					act_link_obj = ActionLinkBuilder(act_links = answer_links, 
 													act_params = act_params).buildObject()				
 
-					print ('before posting message', responses)
+					print ('before posting message')
 
 					responses = rc_api.post_message(text = res_html_student, channel = channels)
 
