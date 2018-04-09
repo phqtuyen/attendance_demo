@@ -26,6 +26,48 @@ class RocketSettingSandBox(RocketSetting):
 	auth_token = '1adWh_2VA7EenY2_odNDukK5CyoFovJUNt0gpGrZheL'
 	user_id = 'o7YSWHimW65oCGy5b'
 
+class ActionLinkPrep:
+	VID_CAM = 'icon-videocam'
+	CALL_3RD = 'call_third_party_action'
+	ICON = 'icon'
+	LABEL = 'label'
+	METHOD = 'method_id'
+	PARAMS = 'params'
+
+	def __init__(self, label, params):
+		self.icon = ActionLinkPrep.VID_CAM
+		self.label = label
+		self.method_id = ActionLinkPrep.CALL_3RD
+		self.params = params
+
+	def buildActionLink(self):
+		return {ActionLinkPrep.ICON: self.icon,
+				ActionLinkPrep.LABEL: self.label,
+				ActionLinkPrep.METHOD: self.method_id,
+				ActionLinkPrep.PARAMS: self.params}
+
+class ActionParameters:
+	ACTION = 'action'
+	METHOD = 'method'
+	def __init__(self, action, method):
+		self.action = action
+		self.method = method	
+
+	def buildActionParameters(self):
+		return {ActionParameters.ACTION: self.action,
+				ActionParameters.METHOD: self.method}
+
+class ActionLinkBuilder:
+	ACTION_LINKS = 'actionLinks'
+	ACTION_PARAM = 'actionParameters'
+	def __init__(self, act_links, act_params):
+		self.act_links = act_links
+		self.act_params = act_params
+	def buildObject(self):
+		return {ActionLinkBuilder.ACTION_LINKS: self.act_links, 
+				ActionLinkBuilder.ACTION_PARAM: self.act_params}
+		 				
+
 class RocketUsersAPI:
 
 	def factory_setting(self):
@@ -47,7 +89,7 @@ class RocketUsersAPI:
 			elif (RCErrDomain.is_rcserver_err(response.status_code)) :
 				err = RCReturnObsErr().config_domain(RCErrDomain.SERVER_DOMAIN) \
 											.config_code(RCErrDomain.SERVER_CODE)
-			msg = response.json().get('message') or response.json().get('error') or ""
+			msg = response.json().get('m`essage') or response.json().get('error') or ""
 			err.config_msg(requests.status_codes._codes[response.status_code][0] + msg)
 			return err
 
@@ -86,11 +128,13 @@ class RocketUsersAPI:
 
 		return obj
 
-	def post_message(self, channel, text):
+	def post_message(self, channel, text, opt=None):
 		headers = {'X-Auth-Token' : self.auth_token, 
 					'X-User-Id' : self.user_id,
-					'Content-type'	:	'application/json'}
+					'Content-type'	:	'application/json'}			
 		payload = {'channel' : channel, 'text' : text}
+		if opt is not None:
+			payload.update(opt) 	
 		payload = json.dumps(payload)
 		post_message_url = self.url + 'chat.postMessage'
 		response = requests.post(post_message_url, headers = headers, data = payload)

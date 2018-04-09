@@ -13,7 +13,7 @@ from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from .views import *
 import htmlmin
-from .networks import RocketSetting, RocketUsersAPI
+from .networks import RocketSetting, RocketUsersAPI, ActionLinkPrep, ActionLinkBuilder, ActionParameters
 from .default_data.rocket_data import RCLoginDataDefault
 from attendance_app.models import RocketAPIAuthentication
 # viewsets: create, edit, delete, post, get, list
@@ -32,7 +32,7 @@ admin = 'admin'
 
 class APIViews:
 	path = '/attendance_app'
-
+	confirm_create_attendance = '/confirm_create_attendance'
 	def __init__(self):
 		self.data = ''
 		self.rocketPath = 'views/'
@@ -44,7 +44,9 @@ class APIViews:
 			"username": "Attendance",
 			"icon_emoji": ":ghost:",
 			}
-
+	def buildURL(self, request):
+		return request.scheme + "://" + request.get_host() + APIViews.path 		
+			
 	def authenticate(self, params):
 		#params = request.GET
 		source = params.get('source')
@@ -105,6 +107,7 @@ class APIViews:
 			rc_api = RocketUsersAPI(rocket_setting)
 			response = rc_api.get_user_by_username(instructor.username)
 			if (response.is_success()):
+				#only pass param label
 				{"actionLinks": [{"icon": "icon-videocam", 
 								"label": "Submit", 
 								"method_id": "call_third_party_action", 
@@ -113,9 +116,15 @@ class APIViews:
 								"label": "Cancel", 
 								"method_id": "call_third_party_action", 
 								"params": "name=cancel"}],
-								"actionParameters": {"action": "http://localhost:8000/attendance_app/confirm_create_attendance", 
+				"actionParameters": {"action": self.buildURL(request) + APIViews.confirm_create_attendance, 
   								"method": "get"}}
-				rc_api.post_message(response.user_data._id, res_html)
+				submit_link = ActionLinkPrep('Submit', 'name=submit').buildActionLink()
+				cancel_link = ActionLinkPrep('Cancel', 'name=cancel').buildActionLink()
+				act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_create_attendance, "post") \
+												.buildActionParameters()
+				act_link_obj = ActionLinkBuilder(act_links = [submit_link, cancel_link], 
+													act_params = act_params).buildObject()				
+				rc_api.post_message(response.user_data._id, res_html, act_link_obj)
 			else:
 				print('Fail to obtain user id.')
 		return HttpResponse()		
