@@ -99,7 +99,7 @@ class APIViews:
 		instructor = self.appControllers.createUserProfileIfNeeded(request)
 		context = self.appControllers.contextForCreateAttendanceHTML(instructor, submitURL)
 
-		print(request.GET.get('source'))
+		print(request.GET.get('role'))
 		res_html = self.format_html(self.app_view.createAttendance(request))
 		rocket_setting = self.authenticate(request.GET)
 
