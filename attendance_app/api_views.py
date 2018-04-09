@@ -34,6 +34,7 @@ admin = 'admin'
 class APIViews:
 	path = '/attendance_app'
 	confirm_create_attendance = '/confirm_create_attendance'
+	confirm_submit = '/confirm_submit'
 	def __init__(self):
 		self.data = ''
 		self.rocketPath = 'views/'
@@ -108,13 +109,12 @@ class APIViews:
 			response = rc_api.get_user_by_username(instructor.username)
 			if (response.is_success()):
 				#only pass param label
-				submit_link = ActionLinkPrep('Submit', 'name=submit').buildActionLink()
-				cancel_link = ActionLinkPrep('Cancel', 'name=cancel').buildActionLink()
+				submit_link = ActionLinkPrep('Confirm Create Attendance', 'name=submit').buildActionLink()
 				act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_create_attendance, "post")
 				source = request.GET.get('source')
 				params = act_params.config_optional({'source': source, 'username': instructor.username}).buildActionParameters()
 				#print(params)
-				act_link_obj = ActionLinkBuilder(act_links = [submit_link, cancel_link], 
+				act_link_obj = ActionLinkBuilder(act_links = [submit_link], 
 													act_params = params).buildObject()				
 				print ("Action Link obj: ", act_link_obj)
 				rc_api.post_message(response.user_data._id, res_html, act_link_obj)
@@ -139,36 +139,46 @@ class APIViews:
 					channels = map(lambda user : user._id, users)
 					responses = map(lambda channel : rc_api.post_message(text = res_html, channel = channel), channels)
 				else:	
-					#print('came here')
+					print('came here')
 					res_html_student = self.format_html(res[1])
 					channels = list(map(lambda user : user._id, users))
 					print("student channels ", channels)
 
 					random_answers = random.sample(range(1, 11), 5)
+					answer_links = []
+					print ('random answers', random_answers)
 
 					for answer in random_answers:
 						answer_link = ActionLinkPrep('' + str(answer), 'value=' + str(answer)).buildActionLink()
-						random_answers.append(answer_link)
+						answer_links.append(answer_link)
 
-					correct_answer_index = random.sample(range(0, 5), 1)
+					print ('answers', answer_links)
+
+					correct_answer_index = random.randint(0, 4)
 					correct_answer = random_answers[correct_answer_index]
 
 					act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_submit, "post")
 					source = request.GET.get('source')
 					act_params.config_optional({'source': source, 'username': instructor.username, 'answer': str(correct_answer)}).buildActionParameters()
 
-					act_link_obj = ActionLinkBuilder(act_links = random_answers, 
+					act_link_obj = ActionLinkBuilder(act_links = answer_links, 
 													act_params = act_params).buildObject()				
 
+					print ('before posting message', responses)
+
 					responses = rc_api.post_message(text = res_html_student, channel = channels)
-					#print (responses)
+
+					print ('post message responses', responses)
+
 					res_html_instructor = self.format_html(self.app_view.viewAttendance(request, {'attendance_id' : res[0], 'answer': str(correct_answer)}))
 					instructor_channel = next(filter(lambda user, instructor_username = instructor_username : user.username == instructor_username, users), '')
-					#print("instructor channel" ,instructor_channel.username)
+
+					print('instructor channel', instructor_channel.username)
+
 					response_instructor = rc_api.post_message(text = res_html_instructor, channel = instructor_channel._id)
 			else:
 				print('Fail to obtain user list.')	
-		return HttpResponse()			
+		return HttpResponse()
 
 	@csrf_exempt
 	def confirmSubmit(self, request):
