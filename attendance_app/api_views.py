@@ -112,10 +112,8 @@ class APIViews:
 				cancel_link = ActionLinkPrep('Cancel', 'name=cancel').buildActionLink()
 				act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_create_attendance, "post")
 				source = request.GET.get('source')
-				act_params.config_optional({'source': source, 'username': instructor.username})
-												.buildActionParameters()
 				act_link_obj = ActionLinkBuilder(act_links = [submit_link, cancel_link], 
-													act_params = act_params).buildObject()				
+													act_params = act_params.config_optional({'source': source, 'username': instructor.username}).buildActionParameters()).buildObject()				
 				rc_api.post_message(response.user_data._id, res_html, act_link_obj)
 			else:
 				print('Fail to obtain user id.')
