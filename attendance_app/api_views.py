@@ -15,7 +15,7 @@ from .views import *
 import htmlmin
 from .networks import RocketSetting, RocketUsersAPI, ActionLinkPrep, ActionLinkBuilder, ActionParameters
 from .default_data.rocket_data import RCLoginDataDefault
-from attendance_app.models import RocketAPIAuthentication
+from attendance_app.models import RocketAPIAuthentication, Attendance
 import random
 # viewsets: create, edit, delete, post, get, list
 #1. welcome user to create attendance
@@ -132,16 +132,19 @@ class APIViews:
 			response = rc_api.get_users()
 			if (response.is_success()):
 				users = response.get_users()
+				#print(users[0].roles)
 				users = list(filter(lambda user : user.name != None and user.username != None, users))
 				res = self.app_view.confirmCreateAttendanceAPI(request)
+				print(res)
 				if (not res[0]):
 					res_html = self.format_html(res[1])
-					channels = map(lambda user : user._id, users)
-					responses = map(lambda channel : rc_api.post_message(text = res_html, channel = channel), channels)
+					channels = list(map(lambda user : user._id, users))
+					responses = rc_api.post_message(text = res_html, channel = instructor_username)
 				else:	
 					print('came here')
 					res_html_student = self.format_html(res[1])
-					channels = list(map(lambda user : user._id, users))
+					#channels = list(map(lambda user : user._id, users))
+					channels = [user._id for user in users if user.username != instructor_username]
 					print("student channels ", channels)
 
 					random_answers = random.sample(range(1, 11), 5)
@@ -165,17 +168,20 @@ class APIViews:
 													act_params = act_params).buildObject()				
 
 					print ('before posting message')
-
+					#note what happebn if fail to send message to student resend or what, for how many times ?
 					responses = rc_api.post_message(text = res_html_student, channel = channels)
 
 					print ('post message responses', responses)
 
 					res_html_instructor = self.format_html(self.app_view.viewAttendance(request, {'attendance_id' : res[0], 'answer': str(correct_answer)}))
-					instructor_channel = next(filter(lambda user, instructor_username = instructor_username : user.username == instructor_username, users), '')
-
-					print('instructor channel', instructor_channel.username)
-
-					response_instructor = rc_api.post_message(text = res_html_instructor, channel = instructor_channel._id)
+					instructor_channel = [user._id for user in users if user.username == instructor_username]
+					#same problem with send to admin
+					response_instructor = rc_api.post_message(text = res_html_instructor, channel = instructor_channel)
+					if response_instructor.is_success():
+						Attendance.objects.set_message_id(res[0], response_instructor.msg._id)\
+											.set_room_id(res[0], response_instructor.rid)
+					else :
+						print('Fail to send message to instructor. Error message ', response_instructor.get_err())
 			else:
 				print('Fail to obtain user list.')	
 		return HttpResponse()

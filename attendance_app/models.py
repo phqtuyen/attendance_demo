@@ -106,6 +106,20 @@ class AttendanceManager(models.Manager):
                                 created_on = created_on)
         return attendance.id
 
+    def set_message_id(self, attendance_id, message_id):   
+        attendance = self.getAttendanceByID(attendance_id)
+        if (attendance != None):
+            attendance.message_id = message_id
+            attendance.save()
+        return self       
+
+    def set_room_id(self, attendance_id, room_id):   
+        attendance = self.getAttendanceByID(attendance_id)
+        if (attendance != None):
+            attendance.room_id = room_id
+            attendance.save()
+        return self                     
+
     def getAttendanceByID(self, attendanceID):
         try:
             attendance = Attendance.objects.get(id__exact = attendanceID)
@@ -121,6 +135,8 @@ class AttendanceManager(models.Manager):
 class Attendance(models.Model):
     created_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
     created_on = models.DateTimeField(auto_now_add = True)
+    message_id = models.CharField(max_length = 100)
+    room_id    = models.CharField(max_length = 100)
     objects = AttendanceManager()    
 
 class AttendanceSubmitManager(models.Manager):
@@ -136,6 +152,7 @@ class AttendanceSubmitManager(models.Manager):
             return attendanceSubmit.id
 
         return submitted_by_list[0].id            
+
 
     def createAttSubmit(self, attendance, submitted_on, submitted_by):
         submission = self.create(attendance = attendance, 

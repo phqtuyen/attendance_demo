@@ -7,6 +7,7 @@ from django.http import JsonResponse
 
 from attendance_app.models import Question, Answer, UserProfile, Attendance, AttendanceSubmit
 from django.utils import timezone
+from attendance_app.default_data.rocket_data import RCRole
 question_key = 'Question'
 #to be update using database
 question = "What is 1 + 1"
@@ -32,11 +33,20 @@ class AppControllers:
 			+ 'confirm_submit?source=' + str(source)
 		return submitURL
 
+	def get_role(self, st):
+		if RCRole.ADMIN in st:
+			return RCRole.ADMIN
+		else:
+			if RCRole.USER in st:	
+				return RCRole.USER
+			else:
+				return RCRole.UNKNOWN		
 	def userProfileFromRequest(self, requestParam):
 		tempProfile = UserProfile() \
 						.configID(requestParam.get('username'), requestParam.get('source')) \
 						.configName(requestParam.get('first_name'), requestParam.get('last_name'))\
-						.configEmail(requestParam.get('email'), requestParam.get('role')) \
+						.configEmail(requestParam.get('email'), 
+										self.get_role(requestParam.get('role'))) \
 						.configCreatedOn(None)
 		return tempProfile
 
@@ -51,7 +61,7 @@ class AppControllers:
 		requestParam = request.GET or request.POST
 		username = requestParam.get('username')
 		chat_url = requestParam.get('source')
-		instructor = UserProfile.objects.hasUserWithRole(username, chat_url, 'instructor')
+		instructor = UserProfile.objects.hasUserWithRole(username, chat_url, RCRole.ADMIN)
 		if (instructor):
 			attendanceID = Attendance.objects.createAttendance(instructor, timezone.now())
 			return attendanceID
