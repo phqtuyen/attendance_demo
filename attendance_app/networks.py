@@ -49,6 +49,7 @@ class ActionLinkPrep:
 class ActionParameters:
 	ACTION = 'action'
 	METHOD = 'method'
+	DELETE_AFTER_SUCCESS = 'delete_after_success'
 	def __init__(self, action, method):
 		self.action = action
 		self.method = method	

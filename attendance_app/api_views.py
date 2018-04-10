@@ -111,8 +111,11 @@ class APIViews:
 				#only pass param label
 				submit_link = ActionLinkPrep('Confirm Create Attendance', 'name=submit').buildActionLink()
 				act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_create_attendance, "post")
+
 				source = request.GET.get('source')
-				params = act_params.config_optional({'source': source, 'username': instructor.username}).buildActionParameters()
+				act_params.config_optional({'source': source, 'username': instructor.username})
+				act_params.config_optional({ActionParameters.DELETE_AFTER_SUCCESS: True})
+				params = act_params.buildActionParameters()
 				#print(params)
 				act_link_obj = ActionLinkBuilder(act_links = [submit_link], 
 													act_params = params).buildObject()				
