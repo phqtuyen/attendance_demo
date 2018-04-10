@@ -104,19 +104,20 @@ class AttendanceManager(models.Manager):
     def createAttendance(self, created_by, created_on):
         attendance = self.create(created_by = created_by,
                                 created_on = created_on)
+        attendance.init_empty_fields()
         return attendance.id
 
     def set_message_id(self, attendance_id, message_id):   
         attendance = self.getAttendanceByID(attendance_id)
         if (attendance != None):
-            attendance.message_id = message_id
+            attendance.messageid = message_id
             attendance.save()
         return self       
 
     def set_room_id(self, attendance_id, room_id):   
         attendance = self.getAttendanceByID(attendance_id)
         if (attendance != None):
-            attendance.room_id = room_id
+            attendance.rid = room_id
             attendance.save()
         return self                     
 
@@ -135,9 +136,17 @@ class AttendanceManager(models.Manager):
 class Attendance(models.Model):
     created_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
     created_on = models.DateTimeField(auto_now_add = True)
-    message_id = models.CharField(max_length = 100)
-    room_id    = models.CharField(max_length = 100)
+    messageid = models.CharField(max_length = 255)
+    rommid    = models.CharField(max_length = 255)
     objects = AttendanceManager()    
+
+    def init_empty_fields(self):
+        self.messageid = ""
+        self.roomid = ""
+        self.save()
+        return self
+    # def config_message_id(self, mid):
+    #     self.message_id = mid
 
 class AttendanceSubmitManager(models.Manager):
     def createAttendanceSubmit(self, attendance, tempProfile):
@@ -147,19 +156,30 @@ class AttendanceSubmitManager(models.Manager):
         if (not submitted_by_list):
             attendanceSubmit = self.create(attendance = attendance, 
                                             submitted_on = timezone.now(), 
-                                            submitted_by = submitted_by)
+                                            submitted_by = submitted_by,
+                                            boolean_field = False)
             attendanceSubmit.save()
             return attendanceSubmit.id
 
-        return submitted_by_list[0].id            
-
-
+        return submitted_by_list[0].id               
+        
     def createAttSubmit(self, attendance, submitted_on, submitted_by):
         submission = self.create(attendance = attendance, 
                                     submitted_on = submitted_on, 
                                     submitted_by = submitted_by)   
         attendanceSubmit.save()
         return submission.id
+
+    def verify_submission(self, submitted_by, attendance):
+        try:
+            submission = self.get(submitted_by__id__exact = submitted_by.id,
+                                    attendance__id__exact = attendance.id)
+            submission.verify_status = True
+            submission.save()
+        except Exception:
+            print (Exception)
+            return None
+        return self        
 
     def student_submitted(self, submitted_by, attendance):
         try :
@@ -188,6 +208,7 @@ class AttendanceSubmit(models.Model):
     attendance = models.ForeignKey(Attendance, on_delete = models.SET_NULL, null = True)
     submitted_on = models.DateTimeField(auto_now_add = True)	
     submitted_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
+    verify_status = models.BooleanField()
     objects = AttendanceSubmitManager()
 
 class RocketAPIAuthenticationManager(models.Manager):
