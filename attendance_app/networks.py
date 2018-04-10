@@ -105,13 +105,13 @@ class RocketUsersAPI:
 		response = requests.get(getUsersUrl, headers=headers)
 		r = response.json()
 		obj = RCReturnObs(False)
-		print("response.status_code: %s", response.status_code)
+		#print("response.status_code: %s", response.status_code)
 
 		if (RCErrDomain.is_rclogic_err(response.status_code)):
 			is_success = r.get('success')
 			users = r.get('users') 	    
 
-			print("is_success: %s", is_success)			
+			#print("is_success: %s", is_success)			
 			if (is_success and users):	    
 				obj = RCGetUserReturn(is_success, [])
 				for json_obj in users:
@@ -130,7 +130,7 @@ class RocketUsersAPI:
 			print(response.status_code)
 			obj.config_err(err)			
 		
-		print("return obj: %s", obj)
+		#print("return obj: %s", obj)
 
 		return obj
 
@@ -144,9 +144,9 @@ class RocketUsersAPI:
 		payload = json.dumps(payload)
 		post_message_url = self.url + 'chat.postMessage'
 		response = requests.post(post_message_url, headers = headers, data = payload)
-		print("payload: ",payload)
+		#print("payload: ",payload)
 		r = response.json()
-		print("response", r)
+		#print("response", r)
 		obj = RCReturnObs(False)
 		if (RCErrDomain.is_rclogic_err(response.status_code)):
 			is_success = r.get('success')
