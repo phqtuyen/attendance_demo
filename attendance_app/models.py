@@ -3,36 +3,20 @@ from django.utils import timezone
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 # Create your models here.
 
-#Manager Class for UserProfile
-
-class QuestionManager(models.Manager):
-    def createQuestion(self,questionText):
-        if (not Question.objects.filter(questionText__iexact=questionText)):
-            self.create(questionText=questionText)
-
-class Question(models.Model):
-    questionText = models.CharField(max_length = 300)
-    objects = QuestionManager()
-
-class AnswerManager(models.Manager):
-    def createAnswer(self, question, answerText):
-        if (not Answer.objects.filter(answerText__iexact=answerText)):
-            self.create(question=question,answerText=answerText)
-
-class Answer(models.Model):
-      question = models.ForeignKey(Question, on_delete = models.SET_NULL, null = True)
-      answerText = models.CharField(max_length = 300)     
-      objects = AnswerManager()                  
+#Manager Class for UserProfile         
 
 class UserProfileManager(models.Manager):
     #create new userprofile if not existed 
     def createUserProfile(self, tempProfile):
         userProfile = UserProfile.objects.hasUserProfile(username=tempProfile.username, 
                                                             chat_url=tempProfile.chat_url)
+        print('userProfile: ', userProfile)
         if (not userProfile):
             userProfile = self.create(username=tempProfile.username,
                                          chat_url=tempProfile.chat_url)
+            print('finish create before config from tempProfile')
             userProfile.configFromProfile(tempProfile)
+            print('finish config from tempProfile')
             userProfile.save()
         return userProfile    
     
@@ -59,8 +43,7 @@ class UserProfileManager(models.Manager):
 class UserProfile(models.Model):
     username = models.CharField(max_length = 150)
     chat_url = models.CharField(max_length = 255)
-    first_name = models.CharField(max_length = 150)
-    last_name = models.CharField(max_length = 150)
+    name = models.CharField(max_length = 150)
     email = models.TextField()
     created_on = models.DateTimeField(auto_now_add = True)
     role = models.CharField(max_length = 40)
@@ -71,9 +54,8 @@ class UserProfile(models.Model):
         self.chat_url = chat_url or ""
         return self
 
-    def configName(self, first_name, last_name):
-        self.first_name = first_name or ""
-        self.last_name = last_name or ""
+    def configName(self, name):
+        self.name = name or ""
         return self    
         
     def configEmail(self, email, role):
@@ -89,16 +71,17 @@ class UserProfile(models.Model):
         return self    
 
     def configFromProfile(self, tempProfile):
-        self.first_name = tempProfile.first_name 
-        self.last_name = tempProfile.last_name
+        print('call config from profile.')
+        self.name = tempProfile.name 
+        print("tempProfile name while config:", tempProfile.name)
         self.email = tempProfile.email
         self.role = tempProfile.role
         self.created_on = tempProfile.created_on or timezone.now()
-
+        self.save()
         return self
 
     def __str__(self):
-        return self.username
+        return self.username + ' ' + self.name + ' ' + self.email
 
 class AttendanceManager(models.Manager):
     def createAttendance(self, created_by, created_on):
@@ -117,7 +100,7 @@ class AttendanceManager(models.Manager):
     def set_room_id(self, attendance_id, room_id):   
         attendance = self.getAttendanceByID(attendance_id)
         if (attendance != None):
-            attendance.rid = room_id
+            attendance.roomid = room_id
             attendance.save()
         return self                     
 
@@ -137,7 +120,7 @@ class Attendance(models.Model):
     created_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
     created_on = models.DateTimeField(auto_now_add = True)
     messageid = models.CharField(max_length = 255)
-    rommid    = models.CharField(max_length = 255)
+    roomid    = models.CharField(max_length = 255)
     objects = AttendanceManager()    
 
     def init_empty_fields(self):
@@ -157,7 +140,7 @@ class AttendanceSubmitManager(models.Manager):
             attendanceSubmit = self.create(attendance = attendance, 
                                             submitted_on = timezone.now(), 
                                             submitted_by = submitted_by,
-                                            boolean_field = False)
+                                            correct_submission = False)
             attendanceSubmit.save()
             return attendanceSubmit.id
 
@@ -174,7 +157,7 @@ class AttendanceSubmitManager(models.Manager):
         try:
             submission = self.get(submitted_by__id__exact = submitted_by.id,
                                     attendance__id__exact = attendance.id)
-            submission.verify_status = True
+            submission.correct_submission = True
             submission.save()
         except Exception:
             print (Exception)
@@ -185,6 +168,9 @@ class AttendanceSubmitManager(models.Manager):
         try :
             submissionList = self.filter(submitted_by__id__exact = submitted_by.id,
                                             attendance__id__exact = attendance.id)
+            #print ('submissionList: ', submissionList)
+            #print ('student username: ', submitted_by.id, 'attendance id: ', attendance.id)
+            #print ('Data base: ', AttendanceSubmit.objects.all())
             if (not submissionList):
                 return None
             else:
@@ -208,8 +194,20 @@ class AttendanceSubmit(models.Model):
     attendance = models.ForeignKey(Attendance, on_delete = models.SET_NULL, null = True)
     submitted_on = models.DateTimeField(auto_now_add = True)	
     submitted_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
-    verify_status = models.BooleanField()
+    correct_submission = models.BooleanField()
     objects = AttendanceSubmitManager()
+
+    def format_str(self, att_id, username, correct, name, email):
+        return 'att_id: ' + str(att_id)\
+                 + ' stud_id: ' + str(username)\
+                 + ' correct: ' + str(correct)\
+                 + ' name: ' + str(name)\
+                 + ' email: ' + str(email)
+
+    def __str__(self):
+        return self.format_str(self.attendance.id, self.submitted_by.id,
+                                 self.correct_submission, self.submitted_by.name, 
+                                 self.submitted_by.email)
 
 class RocketAPIAuthenticationManager(models.Manager):
     def createRocketAPIAuth(self, url, user_id, auth_token):
