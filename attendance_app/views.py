@@ -50,8 +50,6 @@ class AppControllers:
                                         .configEmail(requestParam.get('email'),
                                                                         self.get_role(requestParam.get('role'))) \
                                         .configCreatedOn(None)
-        print('temp profile name: ',tempProfile.name)
-        print('temp profile email: ', tempProfile.email)
         return tempProfile
 
     def createUserProfileIfNeeded(self, request):
