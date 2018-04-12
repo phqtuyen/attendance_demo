@@ -23,8 +23,6 @@ class AppControllers:
         submitURL = request.scheme + "://" + request.get_host() + "/" + AppViews.path \
                 + 'confirm_create_attendance?source=' + str(source) + 'username=' + str(username)
 
-        # submitURL = AppViews.path \
-        #       + '/confirm_create_attendance?source=' + str(source)
         return submitURL
 
     def urlToConfirmSubmit(self, request, path):
@@ -43,7 +41,6 @@ class AppControllers:
             return RCRole.USER
 
     def userProfileFromRequest(self, requestParam):
-        print("param to create tempProfile: ", requestParam)
         tempProfile = UserProfile()\
                                         .configID(requestParam.get('username'), requestParam.get('source')) \
                                         .configName(requestParam.get('name'))\
@@ -54,7 +51,6 @@ class AppControllers:
 
     def createUserProfileIfNeeded(self, request):
         requestParam = request.GET or request.POST
-        print("param provided to create user profile:", requestParam)
         user_prof = self.userProfileFromRequest(requestParam)
         instructor = UserProfile.objects.createUserProfile(user_prof)
         return instructor
@@ -82,14 +78,10 @@ class AppControllers:
 
     def verifyAnswer(self, params):
         query_str = params.get(RCActionLink.ACTION_PARAM)
-        #print ("query ", query_str)
         if query_str is not None:
             answer_dict = parse_qs(query_str)
-            #print('answer ', answer_dict)
             choice = answer_dict.get(RCActionLink.VALUE)[0]
             correct_choice = params.get(RCActionLink.ANSWER)
-            #print ('student answer ', choice)
-            #print ('correct answer ', correct_choice)
             if choice == correct_choice :
                 return True
             else :
@@ -126,11 +118,8 @@ class AppViews:
 
         if (attendance_id):
             context = self.appControllers.contextForConfirmCreateAttendanceHTML(question, submitResultURL, attendance_id)
-            #response = HttpResponse(render(request, self.viewPath + "question.html", context))
-            #return response
             return render(request, self.viewPath + "question.html", context)
         else:
-            #return 'Only Registered instructors are allowed to use this feature.'
             return  HttpResponse('Fail to create attendance.')
 
     def confirmCreateAttendanceAPI(self, request):
@@ -139,11 +128,8 @@ class AppViews:
 
         if (attendance_id):
             context = self.appControllers.contextForConfirmCreateAttendanceHTML(question, submitResultURL, attendance_id)
-            #response = HttpResponse(render(request, self.viewPath + "question.html", context))
-            #return response
             return (attendance_id ,render(request, self.viewPath + "question.html", context))
         else:
-            #return 'Only Registered instructors are allowed to use this feature.'
             return  (attendance_id, HttpResponseServerError('Fail to create attendance.'))
 
     @csrf_exempt
@@ -164,21 +150,15 @@ class AppViews:
 
     def confirmSubmitAPI(self, request):
         params = request.POST
-        #print ()
         attendance = Attendance.objects.getAttendanceByID(params.get('attendance_id'))
-        print('inside confirmSubmitAPI, before call userProfileFromRequest')
         tempProfile = self.appControllers.userProfileFromRequest(params)
-        print('inside confirmSubmitAPI, after call userProfileFromRequest')
         user_profile = UserProfile.objects.hasUserProfile(username = tempProfile.username,
                                                                                         chat_url = tempProfile.chat_url)
 
-        print('tempProfile username: ', tempProfile.username)
         if user_profile:
-            print ('user already exist: ', user_profile.username, ' ', user_profile.name)
             tempProfile = user_profile
         submitted = AttendanceSubmit.objects.student_submitted(submitted_by = tempProfile,
                                                             attendance = attendance)
-        #print ('submitted list: ',submitted)
         if not submitted:
             submission = AttendanceSubmit.objects.createAttendanceSubmit(attendance = attendance,
                                                                                                             tempProfile = tempProfile)
@@ -196,14 +176,10 @@ class AppViews:
         params = params  or request.POST
         context = {}
         attendance = Attendance.objects.getAttendanceByID(params.get('attendance_id'))
-        #print (attendance.id)
         if (attendance):
             submissionList = AttendanceSubmit.objects.getSubmissionList(attendance)
             context['submission_list'] = submissionList
-            #print(submissionList)
             context['answer'] = params.get('answer')
-            print(UserProfile.objects.all())
-            print(submissionList)
             return (attendance, HttpResponse(render(request, self.viewPath + "view.html", context)))
         else:
             return (None, HttpResponse("No such attendance."))
@@ -212,62 +188,4 @@ class AppViews:
         ob = test_class()
         return HttpResponse(ob.test_print())
 
-    # print(response.getvalue())
-    # return response
 
-
-
-# viewsets: create, edit, delete, post, get, list
-#1. welcome user to create attendance
-#2. create attendance
-#3. allow student to check attendance
-#4. list all attendances
-#5. list all checks of an attendance
-#6. http://www.django-rest-framework.org/api-guide/views/
-
-# class APIViews:
-#       def __init__(self):
-#               self.data = ''
-
-#       @csrf_exempt
-#       def createAttendance(self, request):
-#               view = AppViews()
-#               response = view.createForm(request)
-#               html_value = response.getvalue().decode("utf-8")
-#               print('hi')
-#               return JsonResponse({
-#                               'key': 'create_attendance',
-#                               'html': response.getvalue().decode("utf-8")
-#                       })
-
-#       @csrf_exempt
-#       def confirmCreateAttendance(self, request):
-#               # TODO: Need to create an attendance in database
-#               return JsonResponse({
-#                               'key': 'confirm_create_attendance',
-#                               'attendance_id': 'NULL'
-#                       })
-
-#       @csrf_exempt
-#       def confirmSubmit(self, request):
-#               # TODO: Need to create an attendance submit in database
-
-#               view = AppViews()
-#               response = view.submitResult(request)
-#               html_value = response.getvalue().decode("utf-8")
-
-#               return JsonResponse({
-#                               'key': 'confirm_submit',
-#                               'html': html_value
-#                       })
-
-#       @csrf_exempt
-#       def viewAttendance(self, request):
-#               view = AppViews()
-#               response = view.view(request)
-#               html_value = response.getvalue().decode("utf-8")
-
-#               return JsonResponse({
-#                               'key': 'view_attendance',
-#                               'html': html_value
-#                       })

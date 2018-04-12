@@ -50,7 +50,6 @@ class APIViews:
         return request.scheme + "://" + request.get_host() + APIViews.path
 
     def authenticate(self, params):
-        #params = request.GET
         source = params.get('source')
         username = 'attendance'
         password = 'attendance'
@@ -74,7 +73,6 @@ class APIViews:
                                                             .set_auth_token(login_result.get_auth_token()) \
                                                             .save()
                 else :
-                    print(login_result.get_err())
                     rocket_setting = None
         else:
             rocket_api = RocketUsersAPI(rocket_setting)
@@ -85,7 +83,6 @@ class APIViews:
                 RocketAPIAuthentication.objects.createRocketAPIAuth(source, login_result.get_uid(),
                                                                                                 login_result.get_auth_token())
             else :
-                print(login_result.get_err())
                 rocket_setting = None
         return rocket_setting
 
@@ -99,22 +96,18 @@ class APIViews:
         submitURL = self.appControllers.urlToConfirmCreateAttendance(request, AppViews.path)
         instructor = self.appControllers.createUserProfileIfNeeded(request)
         context = self.appControllers.contextForCreateAttendanceHTML(instructor, submitURL)
-        #print(request.GET.get('role'))
         res_html = self.format_html(self.app_view.createAttendance(request))
         rocket_setting = self.authenticate(request.GET)
         if (rocket_setting):
             rc_api = RocketUsersAPI(rocket_setting)
             response = rc_api.get_user_by_username(instructor.username)
             if (response.is_success()):
-            #only pass param label
                 submit_link = ActionLinkPrep('Confirm Create Attendance', 'name=submit').buildActionLink()
                 act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_create_attendance, "post")
                 source = request.GET.get('source')
                 params = act_params.config_optional({'source': source, 'username': instructor.username}).buildActionParameters()
-                #print(params)
                 act_link_obj = ActionLinkBuilder(act_links = [submit_link],
                                                                                         act_params = params).buildObject()
-                print ("Action Link obj: ", act_link_obj)
                 rc_api.post_message(response.user_data._id, res_html, act_link_obj)
             else:
                 print('Fail to obtain user id.')
@@ -132,26 +125,19 @@ class APIViews:
                 users = response.get_users()
                 users = list(filter(lambda user : user.name != None and user.username != None, users))
                 res = self.app_view.confirmCreateAttendanceAPI(request)
-                #print('response from creating attendance: ', res)
                 if (not res[0]):
                     res_html = self.format_html(res[1])
                     channels = list(map(lambda user : user._id, users))
                     responses = rc_api.post_message(text = res_html, channel = instructor_username)
                 else:
-                    #print('came here')
                     res_html_student = self.format_html(res[1])
                     channels = [user._id for user in users if user.username != instructor_username]
                     random_answers = random.sample(range(1, 11), 5)
                     answer_links = []
-                    #print ('random answers', random_answers)
 
                     for answer in random_answers:
-                #change
                         answer_link = ActionLinkPrep('' + str(answer), 'value=' + str(answer)).buildActionLink()
-                        #print('answer_link: ', answer_link)
                         answer_links.append(answer_link)
-
-                    #print ('answers', answer_links)
 
                     correct_answer_index = random.randint(0, 4)
                     correct_answer = random_answers[correct_answer_index]
@@ -167,21 +153,12 @@ class APIViews:
 
                     act_link_obj = ActionLinkBuilder(act_links = answer_links,
                                                                                     act_params = act_params).buildObject()
-                    #print("act link obj of choice sent to student: ", act_link_obj)
-
-                    #print ('before posting message')
-                    #note what happebn if fail to send message to student resend or what, for how many times ?
                     responses = rc_api.post_message(text = res_html_student, channel = channels, opt = act_link_obj)
-
-                    #print ('post message responses', responses)
 
                     res_html_instructor = self.format_html(self.app_view.viewAttendance(request, {'attendance_id' : res[0], 'answer': str(correct_answer)})[1])
                     instructor_channel = [user._id for user in users if user.username == instructor_username]
-                    #same problem with send to admin
                     response_instructor = rc_api.post_message(text = res_html_instructor, channel = instructor_channel)
                     if response_instructor.is_success():
-                        print('instructor message rid: ', response_instructor.msg[0].rid)
-                        print('instructor message mid: ', response_instructor.msg[0]._id)
                         Attendance.objects.set_message_id(res[0], response_instructor.msg[0]._id)\
                                                                 .set_room_id(res[0], response_instructor.msg[0].rid)
                     else :
@@ -192,13 +169,10 @@ class APIViews:
 
     @csrf_exempt
     def confirmSubmit(self, request):
-                # TODO: Need to create an attendance submit in database
         params = request.POST
-        print ("params to confirm submit: ", params)
         rocket_setting = self.authenticate(params)
         if (rocket_setting):
             rc_api = RocketUsersAPI(rocket_setting)
-            print("before call confirmSubmitAPI")
             res = self.app_view.confirmSubmitAPI(request)
             res_html = self.format_html(res[1])
             channel = params.get('channel')

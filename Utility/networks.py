@@ -1,7 +1,7 @@
 import requests
-from attendance_app.rc_return_obs import *
-from attendance_app.rc_return_obs import RCErrDomain
-from attendance_app.default_data.rocket_data import RCAPI
+from rc_return_obs import *
+from rc_return_obs import RCErrDomain
+from default_data.rocket_data import RCAPI
 # Instructions on using requests: http://docs.python-requests.org/en/latest/user/quickstart/
 import json
 

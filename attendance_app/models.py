@@ -10,13 +10,10 @@ class UserProfileManager(models.Manager):
     def createUserProfile(self, tempProfile):
         userProfile = UserProfile.objects.hasUserProfile(username=tempProfile.username, 
                                                             chat_url=tempProfile.chat_url)
-        print('userProfile: ', userProfile)
         if (not userProfile):
             userProfile = self.create(username=tempProfile.username,
                                          chat_url=tempProfile.chat_url)
-            print('finish create before config from tempProfile')
             userProfile.configFromProfile(tempProfile)
-            print('finish config from tempProfile')
             userProfile.save()
         return userProfile    
     
@@ -71,9 +68,7 @@ class UserProfile(models.Model):
         return self    
 
     def configFromProfile(self, tempProfile):
-        print('call config from profile.')
         self.name = tempProfile.name 
-        print("tempProfile name while config:", tempProfile.name)
         self.email = tempProfile.email
         self.role = tempProfile.role
         self.created_on = tempProfile.created_on or timezone.now()
@@ -128,8 +123,6 @@ class Attendance(models.Model):
         self.roomid = ""
         self.save()
         return self
-    # def config_message_id(self, mid):
-    #     self.message_id = mid
 
 class AttendanceSubmitManager(models.Manager):
     def createAttendanceSubmit(self, attendance, tempProfile):
@@ -168,9 +161,6 @@ class AttendanceSubmitManager(models.Manager):
         try :
             submissionList = self.filter(submitted_by__id__exact = submitted_by.id,
                                             attendance__id__exact = attendance.id)
-            #print ('submissionList: ', submissionList)
-            #print ('student username: ', submitted_by.id, 'attendance id: ', attendance.id)
-            #print ('Data base: ', AttendanceSubmit.objects.all())
             if (not submissionList):
                 return None
             else:

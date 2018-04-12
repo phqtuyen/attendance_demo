@@ -54,6 +54,7 @@ class Utility:
 	                                                        .set_auth_token(login_result.get_auth_token()) \
 	                                                        .save()
 	            else :
+	                print(login_result.get_err())
 	                rocket_setting = None
 	    else:
 	        rocket_api = RocketUsersAPI(rocket_setting)
@@ -64,6 +65,7 @@ class Utility:
 	            RocketAPIAuthentication.objects.createRocketAPIAuth(source, login_result.get_uid(),
 	                                                                                            login_result.get_auth_token())
 	        else :
+	            print(login_result.get_err())
 	            rocket_setting = None
 	    return rocket_setting
 
