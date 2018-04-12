@@ -1,6 +1,7 @@
 import requests
 from attendance_app.rc_return_obs import *
 from attendance_app.rc_return_obs import RCErrDomain
+from attendance_app.default_data.rocket_data import RCAPI
 # Instructions on using requests: http://docs.python-requests.org/en/latest/user/quickstart/
 import json
 
@@ -101,7 +102,7 @@ class RocketUsersAPI:
 
 	def get_users(self):
 		headers = {'X-Auth-Token' : self.auth_token, 'X-User-Id' : self.user_id}
-		getUsersUrl = self.url + "users.list"
+		getUsersUrl = self.url + RCAPI.GET_USER
 		response = requests.get(getUsersUrl, headers=headers)
 		r = response.json()
 		obj = RCReturnObs(False)
@@ -134,6 +135,38 @@ class RocketUsersAPI:
 
 		return obj
 
+	def update_message(self, rid, mid, text):
+		headers = {'X-Auth-Token' : self.auth_token, 
+					'X-User-Id' : self.user_id,
+					'Content-type'	:	'application/json'}	
+		payload = json.dumps({'roomId': rid, 'msgId': mid, 'text': text})
+		post_url = self.url + RCAPI.UPDATE_MESSAGE	
+		response = requests.post(post_url, headers = headers, 
+								data = payload)
+		r = response.json()
+		print ('update message payload: ', payload)
+		obj = RCReturnObs(False)
+		if (RCErrDomain.is_rclogic_err(response.status_code)):
+			is_success = r.get('success')
+			msg = r.get('message')			
+			if (is_success and msg):
+				obj = RCUpdateMessReturn(is_success)
+				temp_mess = RCMessage(msg.get('_id'))
+				temp_user = RCUserData(msg.get('u').get('_id'))
+				temp_user.config_user(msg.get('u').get('username'),
+									msg.get('u').get('username'))
+				temp_mess.config(msg.get('msg'), temp_user).config_rid(msg.get('rid'))
+				obj.config_mess(temp_mess)
+			else :
+				err = RCReturnObsErr().config_domain(RCErrDomain.LOGIC_DOMAIN) \
+										.config_code(RCErrDomain.LOGIC_CODE) \
+										.config_msg(RCErrDomain.NULL_DATA)
+				obj.config_err(err)					
+		else:				
+			err = self.config_err_obj(response)
+			obj.config_err(err)
+		return obj			
+
 	def post_message(self, channel, text, opt=None):
 		headers = {'X-Auth-Token' : self.auth_token, 
 					'X-User-Id' : self.user_id,
@@ -142,7 +175,7 @@ class RocketUsersAPI:
 		if opt is not None:
 			payload.update(opt) 	
 		payload = json.dumps(payload)
-		post_message_url = self.url + 'chat.postMessage'
+		post_message_url = self.url + RCAPI.POST_MESSAGE
 		response = requests.post(post_message_url, headers = headers, data = payload)
 		#print("payload: ",payload)
 		r = response.json()
@@ -169,12 +202,13 @@ class RocketUsersAPI:
 		else:				
 			err = self.config_err_obj(response)
 			obj.config_err(err)
+		print ('update message: ', obj)	
 		return obj	
 	
 	def get_user_by_username(self, username):
 		headers = {'X-Auth-Token' : self.auth_token, 'X-User-Id' : self.user_id}
 		params = {'username' : username}
-		get_url = self.url + 'users.info'
+		get_url = self.url + RCAPI.GET_USER_INFO
 		response = requests.get(get_url, headers = headers, params = params)
 		r = response.json()
 		obj = RCReturnObs(False)
@@ -202,11 +236,9 @@ class RocketUsersAPI:
 
 		return obj		
 
-		
-
 	def login(self, username, password):
 		payload = {'username' : username, 'password' : password}
-		login_url = self.url + 'login'
+		login_url = self.url + RCAPI.LOGIN
 		response = requests.post(login_url, json = payload)
 		r = response.json()
 		obj = RCReturnObs(False)
