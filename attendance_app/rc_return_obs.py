@@ -100,6 +100,8 @@ class RCReturnObs:
 
 	def is_success(self):
 		return self.success
+	def __str__(self):
+		return str(self.success) + ' ' + self.err.__str__()	
 
 class RCGetUserReturn(RCReturnObs):
 	def __init__(self, success, users):
@@ -128,6 +130,14 @@ class RCUserInfoReturn(RCReturnObs):
 	def __init__(self, success ,user):
 		RCReturnObs.__init__(self, success)
 		self.user_data = user
+
+class RCUpdateMessReturn(RCReturnObs):
+	def __init__(self, success):
+		RCReturnObs.__init__(self, success)
+		self.message = None
+	def config_mess(self, msg):
+		self.message = msg
+		return self
 
 class RCPostMessReturn(RCReturnObs):
 	def __init__(self, success):

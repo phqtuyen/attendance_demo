@@ -50,6 +50,8 @@ class AppControllers:
                                         .configEmail(requestParam.get('email'),
                                                                         self.get_role(requestParam.get('role'))) \
                                         .configCreatedOn(None)
+        print('temp profile name: ',tempProfile.name)
+        print('temp profile email: ', tempProfile.email)                                
         return tempProfile
 
     def createUserProfileIfNeeded(self, request):
@@ -171,11 +173,11 @@ class AppViews:
         print('inside confirmSubmitAPI, after call userProfileFromRequest')
         user_profile = UserProfile.objects.hasUserProfile(username = tempProfile.username,
                                                                                         chat_url = tempProfile.chat_url)
+        
 
-        print('tempProfile username: ', tempProfile.username)
-        if user_profile:
-            print ('user already exist: ', user_profile.username, ' ', user_profile.name)
-            tempProfile = user_profile
+		if user_profile:
+			print ('user already exist: ', user_profile.username, ' ', user_profile.name)
+			tempProfile = user_profile
         submitted = AttendanceSubmit.objects.student_submitted(submitted_by = tempProfile,
                                                             attendance = attendance)
         #print ('submitted list: ',submitted)
@@ -202,7 +204,6 @@ class AppViews:
             context['submission_list'] = submissionList
             #print(submissionList)
             context['answer'] = params.get('answer')
-            print(UserProfile.objects.all())
             print(submissionList)
             return (attendance, HttpResponse(render(request, self.viewPath + "view.html", context)))
         else:
