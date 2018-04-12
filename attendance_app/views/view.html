@@ -4,7 +4,7 @@
 {% if submission_list %}
 	<ul>
 		{% for submission in submission_list%}	
-			<li> {{submission.submitted_by.username}} {{submission.submitted_by.first_name}} {{submission.submitted_by.last_name}} {{submission.submitted_by.chat_url}}</li>
+			<li> Name: {{submission.submitted_by.name}}, Email: {{submission.submitted_by.email}}</li>
 		{% endfor %}	
 	</ul>
 {% else %}
