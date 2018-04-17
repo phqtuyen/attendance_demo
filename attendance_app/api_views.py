@@ -151,7 +151,8 @@ class APIViews:
                                                                                                     'username': instructor_username,
                                                                                                     'instructor_username': instructor_username,
                                                                                                     'answer': str(correct_answer),
-                                                                                                    'attendance_id': res[0]})\
+                                                                                                    'attendance_id': res[0]})
+                    act_params = act_params.config_optional({ActionParameters.DELETE_AFTER_SUCCESS: True})\
                                                                     .buildActionParameters()
 
                     act_link_obj = ActionLinkBuilder(act_links = answer_links,
