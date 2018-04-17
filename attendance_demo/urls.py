@@ -20,7 +20,8 @@ from rest_framework import routers
 from attendance_app import views
 
 router = routers.DefaultRouter()
-
+ATTENDANCE_APP = 'attendance_app/'
+FEEDBACK_APP = 'feedback_app/'
 
 urlpatterns = [
 	path(ATTENDANCE_APP, include('attendance_app.urls')),
