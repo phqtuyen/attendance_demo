@@ -2,12 +2,13 @@ from django.db import models
 from attendance_app.models import UserProfile, QuizSession, QuizSessionManager, StudentSubmission, StudentSubmissionManager
 
 class FeedbackSessionManager(QuizSessionManager):
+	pass
 
 class FeedbackSession(QuizSession):
     
-    objects = FeedBackSessioneManager()  
+    objects = FeedbackSessionManager()  
 
-class StudentFeecbackManager(StudentSubmissionManager):
+class StudentFeedbackManager(StudentSubmissionManager):
     def create_student_feedback(self, attendance, tempProfile):
 
         submitted_by = UserProfile.objects.createUserProfile(tempProfile) 

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'attendance_app',
     'rest_framework',
+    'feedback'
 ]
 
 MIDDLEWARE = [
