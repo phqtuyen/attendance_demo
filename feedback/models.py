@@ -1,5 +1,6 @@
 from django.db import models
 from attendance_app.models import UserProfile, QuizSession, QuizSessionManager, StudentSubmission, StudentSubmissionManager
+
 MAX_NUM_CHOICES = 3
 DEFAULT_COMMENT = ''
 DEFAULT = 1
@@ -80,9 +81,4 @@ class StudentFeedback(StudentSubmission):
                                         default = DEFAULT)
     student_comment = models.CharField(max_length = 500)
     objects = StudentFeedbackManager()
-
-
-
-
-
 # Create your models here.
