@@ -78,7 +78,11 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.username + ' ' + self.name + ' ' + self.email
 
-class AttendanceManager(models.Manager):
+class QuizSessionManager(models.Manager):
+
+    class Meta:
+        abstract = True
+
     def createAttendance(self, created_by, created_on):
         attendance = self.create(created_by = created_by,
                                 created_on = created_on)
@@ -110,19 +114,37 @@ class AttendanceManager(models.Manager):
             print ("Object does not exist.")
             return None   
 
+class AttendanceManager(QuizSessionManager):
 
-class Attendance(models.Model):
+    class Meta:
+        abstract = True
+
+#base class for any quiz session
+class QuizSession(models.Model):
     created_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
     created_on = models.DateTimeField(auto_now_add = True)
     messageid = models.CharField(max_length = 255)
     roomid    = models.CharField(max_length = 255)
-    objects = AttendanceManager()    
+
+    class Meta:
+        abstract = True    
 
     def init_empty_fields(self):
         self.messageid = ""
         self.roomid = ""
         self.save()
         return self
+
+class Attendance(QuizSession):
+
+    objects = AttendanceManager()    
+
+
+class StudentSubmissionManager(models.Model):
+    class Meta:
+        abstract = True
+
+
 
 class AttendanceSubmitManager(models.Manager):
     def createAttendanceSubmit(self, attendance, tempProfile):
@@ -179,11 +201,16 @@ class AttendanceSubmitManager(models.Manager):
         except Exception:
             print (Exception)    
             return None
-        
-class AttendanceSubmit(models.Model):
-    attendance = models.ForeignKey(Attendance, on_delete = models.SET_NULL, null = True)
-    submitted_on = models.DateTimeField(auto_now_add = True)	
+
+class StudentSubmission(models.Model):
+    submitted_on = models.DateTimeField(auto_now_add = True)    
     submitted_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
+
+    class Meta:
+        abstract = True
+       
+class AttendanceSubmit(StudentSubmission):
+    attendance = models.ForeignKey(Attendance, on_delete = models.SET_NULL, null = True)
     correct_submission = models.BooleanField()
     objects = AttendanceSubmitManager()
 
