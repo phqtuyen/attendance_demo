@@ -20,10 +20,12 @@ from rest_framework import routers
 from attendance_app import views
 
 router = routers.DefaultRouter()
-
+ATTENDANCE_APP = 'attendance_app/'
+FEEDBACK_APP = 'feedback_app/'
 
 urlpatterns = [
-	path('attendance_app/', include('attendance_app.urls')),
+	path(ATTENDANCE_APP, include('attendance_app.urls')),
+    path(FEEDBACK_APP, include('feedback_app.urls')),
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', admin.site.urls),
