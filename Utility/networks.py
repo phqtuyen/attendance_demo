@@ -1,7 +1,7 @@
 import requests
-from rc_return_obs import *
-from rc_return_obs import RCErrDomain
-from default_data.rocket_data import RCAPI
+from Utility.rc_return_obs import *
+from Utility.rc_return_obs import RCErrDomain
+from Utility.default_data.rocket_data import RCAPI
 # Instructions on using requests: http://docs.python-requests.org/en/latest/user/quickstart/
 import json
 

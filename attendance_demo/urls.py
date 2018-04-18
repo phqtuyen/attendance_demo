@@ -23,7 +23,8 @@ router = routers.DefaultRouter()
 
 
 urlpatterns = [
-	path('attendance_app/', include('attendance_app.urls')),
+	path(ATTENDANCE_APP, include('attendance_app.urls')),
+    path(FEEDBACK_APP, include('feedback.urls')),
     url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^admin/', admin.site.urls),

@@ -1,0 +1,11 @@
+<p> Submitted students</p>
+{% if has_submissions %}
+	<ul>
+		<p> There are {{total}} number of feedbacks</p>	
+		{% for choice, num in choice_stat%}	
+			<li> There are {{num}} of users who chose {{choice}}.</li>
+		{% endfor %}	
+	</ul>
+{% else %}
+	No submissions have been made.	
+{% endif %}	

@@ -85,6 +85,24 @@ class AttendanceManager(models.Manager):
         attendance.init_empty_fields()
         return attendance.id
 
+    def has_session_with_id(self, table_class, session_id):
+        result = table_class.objects.filter(id__exact = session_id)
+        return len(result > 0)
+
+    def get_session_by_id(self, table_class, session_id):
+        try:
+            session = table_class.objects.get(id__exact = session_id)
+            return session
+        except MultipleObjectsReturned:
+            print ("More than one objects with the same id.")
+            return None
+        except ObjectDoesNotExist:
+            print ("Object with this id does not exist.")
+            return None
+
+    # def set_session_message_id(self, table_class, session_id, message_id):
+    #     session = self.get_session_by_id(table_class, session_id)
+
     def set_message_id(self, attendance_id, message_id):   
         attendance = self.getAttendanceByID(attendance_id)
         if (attendance != None):
@@ -97,7 +115,7 @@ class AttendanceManager(models.Manager):
         if (attendance != None):
             attendance.roomid = room_id
             attendance.save()
-        return self                     
+        return self                                
 
     def getAttendanceByID(self, attendanceID):
         try:

@@ -5,6 +5,9 @@ class RCUserData:
 		self.username = ""
 		self.roles = []
 
+	def is_valid(self):
+		return user.name != None and user.username != None	
+
 	def config_user(self, name, username):
 		self.name = name
 		self.username = username	
@@ -112,7 +115,7 @@ class RCGetUserReturn(RCReturnObs):
 		self.users.append(user)
 
 	def get_users(self):
-		return self.users
+		return [user for user in self.users if user.is_valid()]
 
 class RCLoginReturn(RCReturnObs):
 	def __init__(self, success, uid, auth_token):
