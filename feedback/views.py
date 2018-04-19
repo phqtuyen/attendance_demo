@@ -1,5 +1,4 @@
 from django.shortcuts import render
-<<<<<<< 2849f78003514c19e21eab4177e9f3a2958b8b4b
 from django.shortcuts import render
 from django.http import HttpResponse,  HttpResponseServerError
 from django.template import loader, RequestContext
@@ -126,15 +125,3 @@ class ActionLinkView:
 		act_params = self.prepare_action_params()
 		return ActionLinkBuilder(act_links = act_links,
 								act_params = act_params)
-
-						
-
-
-
-
-
-
-=======
-
-# Create your views here.
->>>>>>> init feedback app, setup data model and refactor data in attendance
