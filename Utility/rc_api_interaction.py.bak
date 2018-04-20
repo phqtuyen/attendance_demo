@@ -1,38 +1,31 @@
 
 from Utility.networks import *
-from Utility.default_data.rocket_data import *
+from Utility.default_data import *
 from attendance_app.models import RocketAPIAuthentication
 import htmlmin
 
 class APIFunctions:
     def __init__(self, path):
-        self.data = ''
-        self.rocketPath = 'views/'
-        self.path = path
+    	self.data = ''
+    	self.rocketPath = 'views/'
+    	self.path = path
 
     def build_URL(self, request):
-        return request.scheme + "://" + request.get_host() + self.path
+        return request.scheme + "://" + request.get_host() + self.path	
 
     def format_html(self, response):
         html = response.getvalue().decode('utf-8')
         minified_html_value = htmlmin.minify(html, remove_empty_space = True)
-        return minified_html_value
-
-    def get_users_id(self, users, admin_username):
-        return [user._id for user in self.get_users(users, admin_username)]
-
-    def get_admin_id(self, users, admin_username):
-        return [user._id for user in self.get_admin(users, admin_username)]        
+        return minified_html_value            
 
     def get_users(self, users, admin_username):
         return [user for user in users if user.username != admin_username]
 
     def get_admin(self, users, admin_username):
-        return [user for user in users if user.username == admin_username]
+        return [user for user in users if user.username = admin_username] 
 
     def authenticate(self, params):
         source = params.get('source')
-        print('params pass from feedback start: ', params)
         username = RCLoginDataDefault.USERNAME
         password = RCLoginDataDefault.PASSWORD
         api_authentication = RocketAPIAuthentication.objects.getRocketAPIAuth(source)
@@ -66,4 +59,6 @@ class APIFunctions:
                                                                                                 login_result.get_auth_token())
             else :
                 rocket_setting = None
-        return rocket_setting
+        return rocket_setting	
+
+
