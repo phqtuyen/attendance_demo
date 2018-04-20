@@ -6,7 +6,7 @@ class RCUserData:
 		self.roles = []
 
 	def is_valid(self):
-		return user.name != None and user.username != None	
+		return self.name != None and self.username != None	
 
 	def config_user(self, name, username):
 		self.name = name

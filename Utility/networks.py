@@ -168,6 +168,7 @@ class RocketUsersAPI:
 		payload = {'channel' : channel, 'text' : text}
 		if opt is not None:
 			payload.update(opt) 	
+		print('payload for post message: ', payload)	
 		payload = json.dumps(payload)
 		post_message_url = self.url + RCAPI.POST_MESSAGE
 		response = requests.post(post_message_url, headers = headers, data = payload)
