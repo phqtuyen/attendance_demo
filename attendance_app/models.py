@@ -155,7 +155,7 @@ class AttendanceManager(QuizSessionManager):
 class QuizSession(models.Model):
     created_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
     created_on = models.DateTimeField(auto_now_add = True)
-    source = models.CharField(max_length = 255)
+    source = models.CharField(max_length = 255, default = '')
     messageid = models.CharField(max_length = 255)
     roomid    = models.CharField(max_length = 255)
 
