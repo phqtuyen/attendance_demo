@@ -1,5 +1,9 @@
 /* exported Script */
     /* globals Store */
+    extractQuestion = function(str) {
+      str = str.replace(/^feedback\s(start)\s/g,'');
+      return str;
+    }
 
     class Script {
       prepare_outgoing_request({ request }) {
@@ -16,6 +20,7 @@
         
         console.log('lastCmd2', request.data.text);
         console.log('data obj:', request.data);
+        console.log('question: ', extractQuestion(request.data.text));
         if (match) {
           Store.set('lastCmd', request.data.text);
           let u = request.url;
@@ -25,7 +30,8 @@
           console.log('URL to be sent:', u);
     //attach parameters
           u = u + '&username=' + request.data.user_name + '&role=' + request.data.roles
-              + '&name=' + request.data.name + '&email=' + request.data.emails;
+              + '&name=' + request.data.name + '&email=' + request.data.emails
+              + '&question=' + extractQuestion(request.data.text).trim();
           console.log("finish prepare process outgoing request.");
           return {
             url: u,
