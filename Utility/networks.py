@@ -11,6 +11,11 @@ class RocketSetting:
 	auth_token = ""
 	user_id = ""
 
+	def __str__(self):
+		return "url: " + RocketSetting.url + '\n' +\
+				"auth_token: " + RocketSetting.auth_token +\
+				"user_id: " + RocketSetting.user_id
+
 class RocketSettingKhang(RocketSetting):
 	url = "http://localhost:3000/api/v1/"
 	auth_token = ""

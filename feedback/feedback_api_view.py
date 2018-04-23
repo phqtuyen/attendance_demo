@@ -26,6 +26,7 @@ class FeedbackAPIView(APIFunctions):
 		params = request.GET
 		admin_username = params.get('username')
 		rocket_setting = self.authenticate(params)
+		print(rocket_setting)
 		if rocket_setting:
 			rc_api = RocketUsersAPI(rocket_setting)
 			response = rc_api.get_users()
@@ -62,6 +63,7 @@ class FeedbackAPIView(APIFunctions):
 
 			else:
 				print ('Fail to obtain user')
+				print(response)
 		return HttpResponse('Successful call.')		
 
 	def function(self):

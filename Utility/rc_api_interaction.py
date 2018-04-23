@@ -39,13 +39,13 @@ class APIFunctions:
         rocket_setting = RocketSetting()
         rocket_setting.url = source + RocketSetting.API_PATH
         if (api_authentication):
-            if api_authentication.rocket_chat_user_id != None:
+            if api_authentication.rocket_chat_user_id:
                 rocket_setting.user_id = api_authentication.rocket_chat_user_id
 
-            if api_authentication.rocket_chat_auth_token != None:
+            if api_authentication.rocket_chat_auth_token:
                 rocket_setting.auth_token = api_authentication.rocket_chat_auth_token
 
-            if rocket_setting.user_id == None or rocket_setting.auth_token == None:
+            if not rocket_setting.user_id or not rocket_setting.auth_token :
                 rocket_api = RocketUsersAPI(rocket_setting)
                 login_result = rocket_api.login(username, password)
                 if (login_result.is_sucess()):
@@ -58,10 +58,13 @@ class APIFunctions:
                     rocket_setting = None
         else:
             rocket_api = RocketUsersAPI(rocket_setting)
+            print('No api auth in database so came here')
             login_result = rocket_api.login(username, password)
             if (login_result.is_success()):
                 rocket_setting.user_id = login_result.get_uid()
+                print('login success id: ', login_result.get_uid())
                 rocket_setting.auth_token = login_result.get_auth_token()
+                print('login success auth token: ', login_result.get_auth_token())
                 RocketAPIAuthentication.objects.createRocketAPIAuth(source, login_result.get_uid(),
                                                                                                 login_result.get_auth_token())
             else :
