@@ -12,6 +12,7 @@ from feedback.models import FeedbackSession, StudentFeedback
 from django.utils import timezone
 from urllib.parse import parse_qs
 from feedback.models import StudentFeedbackManager
+from django.views.decorators.clickjacking import xframe_options_exempt
 # Create your views here.
 
 class ActionLinkView:
@@ -79,10 +80,16 @@ class AppController(AbstractControllers):
 
     def get_choice(self, params):
         query_str = params.get(RCActionLink.ACTION_PARAM)
+        print
         if query_str is not None:
             answer_dict = parse_qs(query_str)
+            print('type of ans dict: ', type(answer_dict))
+            print('answer_dict value: ', type(answer_dict.get(RCActionLink.VALUE)))
+            print('type value ', type(answer_dict.get(RCActionLink.VALUE)[0]))
+            print('value: ', answer_dict.get(RCActionLink.VALUE)[0])
             return answer_dict.get(RCActionLink.VALUE)[0]
         else:
+            print('go through this.')
             return None
 
 class GeneralView:
@@ -104,6 +111,7 @@ class GeneralView:
         feedback_id = self.app_controller.create_feedback_session(params)
         context = {}
         question = params.get('question')
+        print('params to create feedback: ', params)
         if question:
             context.update({'has_question': True, 'question': question})
         if (feedback_id):
@@ -111,14 +119,27 @@ class GeneralView:
         else:
             return (None ,HttpResponse('Fail to create feedback session.'))
 
+    @xframe_options_exempt
     def further_comment(self, request):
         params = request.GET
+        print ('params for further_comment: ', params)
         choice = self.app_controller.get_choice(params)
-        context = {'choice': choice or ''}
+        print('choice type: ', type(choice))
+        my_choice = "my choice: " + choice
+        print('selected choice: ', choice)
+        context = {}
+        context.update({'choice': choice or ''})
+        context.update({'choice_2': my_choice })
         context.update({'username': params.get('username') or ''})
         context.update({'feedback_id': params.get('feedback_id') or ''})
         context.update({'confirm_submit_url': self.app_controller.url_to_confirm_submit(request)})
-        return render(request, self.view_path + 'further_comment.html', context)
+
+        print('further comment context: ', context)
+
+        response = render(request, self.view_path + 'further_comment.html', context)
+        print('further comment context: ', context)
+        print('type of choice: ', type(choice))
+        return response
 
 
     def view_feedback(self, request, params = {}):
@@ -128,7 +149,7 @@ class GeneralView:
         methods_list = [method_name for method_name in dir(StudentFeedback.objects)
                         if callable(getattr(StudentFeedback.objects, method_name))]
         method_list_2 =  [method_name for method_name in dir(FeedbackSession.objects)
-                    if callable(getattr(FeedbackSession.objects, method_name))]           
+                    if callable(getattr(FeedbackSession.objects, method_name))]
         print('method list StudentFeedback: ', methods_list)
         print('method list FeedbackSession: ', method_list_2)
         #print('method list ob: ', method_list_3)
@@ -145,14 +166,20 @@ class GeneralView:
             print('Invalid feedback session id.')
 
     def confirm_submit(self, request):
-    	print("params to confirm submit: ", params)
-    	feedback_session = FeedbackSession.objects.get_session_by_id(params.get('feedback_id'))
-    	user_profile = self.app_controller.createUserProfileIfNeeded(params)
-    	submitted = StudentFeedback.student_submitted(submitted_by = user_profile,
-    													feedback_session = feedback_session)
-    	if not submitted:
-    		submission = StudentFeedback.objects.create_student_feedback(feedback_session,
-    																	user_profile)
-    		return (True, HttpResponse('Submission success.'))
-    	else:
-    		return (False, HttpResponse('You can only make submission once.'))	
+        params = request.POST
+        print("params to confirm submit: ", params)
+        feedback_session = FeedbackSession.objects.get_session_by_id(params.get('feedback_id'))
+        tempParams = dict(params)
+        # tempParams.update({'source': feedback_session.})
+        user_profile = self.app_controller.createUserProfileIfNeeded(params)
+        submitted = StudentFeedback.student_submitted(submitted_by = user_profile,
+                                                        feedback_session = feedback_session)
+        if not submitted:
+            submission = StudentFeedback.objects.create_student_feedback(feedback_session,
+                                                                            user_profile)
+            comment = params.get('comment')
+            choice = params.get('choice')
+
+            return HttpResponse('Submission success.')
+        else:
+            return HttpResponse('You can only make submission once.')

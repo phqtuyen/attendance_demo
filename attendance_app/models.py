@@ -137,7 +137,7 @@ class QuizSessionManager(models.Manager):
 
     def get_session_by_id(self, session_id):
         try:
-            session = self.get(id__exact = attendanceID)
+            session = self.get(id__exact = session_id)
             return session
         except MultipleObjectsReturned:
             print ("More than one objects with the same id.")
@@ -155,6 +155,7 @@ class AttendanceManager(QuizSessionManager):
 class QuizSession(models.Model):
     created_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
     created_on = models.DateTimeField(auto_now_add = True)
+    source = models.CharField(max_length = 255)
     messageid = models.CharField(max_length = 255)
     roomid    = models.CharField(max_length = 255)
 
@@ -164,6 +165,7 @@ class QuizSession(models.Model):
     def init_empty_fields(self):
         self.messageid = ""
         self.roomid = ""
+        self.source = ""
         self.save()
         return self
 
@@ -172,6 +174,11 @@ class QuizSession(models.Model):
         self.save()
         return self
 
+    def set_source(self, source):
+        self.source = source
+        self.save()
+        return self
+        
     def set_message_id(self, message_id):
         self.messageid = message_id
         self.save()

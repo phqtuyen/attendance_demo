@@ -80,3 +80,14 @@ class StudentFeedback(StudentSubmission):
     student_comment = models.CharField(max_length = 500)
     objects = StudentFeedbackManager()
 # Create your models here.
+
+    def set_choice(self, choice):
+        self.student_choice = choice
+        self.save()
+        return self
+
+    def set_comment(self, comment):
+        self.student_comment = comment
+        self.save()
+        return self
+

@@ -66,7 +66,11 @@ class FeedbackAPIView(APIFunctions):
 				print(response)
 		return HttpResponse('Successful call.')		
 
-	def function(self):
-						pass				
+	def confirm_submit(self, request):
+		params = request.POST
+		rocket_setting = self.authenticate(params)
+		if rocket_setting:
+			to_user_response = self.format_html(self.app_view.confirm_submit(request))
+			
 
 
