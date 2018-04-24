@@ -73,9 +73,6 @@ class FeedbackAPIView(APIFunctions):
         if rocket_setting:
             rc_api = RocketUsersAPI(rocket_setting)
             submission_attempt = self.app_view.confirm_submit(request)
-            to_user_response = self.format_html(submission_attempt[1])
-            channel = params.get('channel')
-            to_user_api_res = rc_api.post_message(channel = channel, text = to_user_response)
             if submission_attempt[0]:
                 updated_admin_view = self.app_view.view_feedback(request, params)
                 if updated_admin_view[0]:
