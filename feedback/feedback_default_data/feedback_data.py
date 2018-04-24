@@ -10,3 +10,4 @@ class FeedbackData:
 	CHOICE_STAT = 'choice_stat'
 	COMMENT = 'comment'
 	TOTAL = 'total'
+	COMMENTS = 'comments'
