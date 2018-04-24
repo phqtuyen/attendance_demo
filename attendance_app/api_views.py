@@ -13,7 +13,7 @@ from django.contrib.auth.models import User, Group
 from django.http import JsonResponse
 from .views import *
 import htmlmin
-from .networks import RocketSetting, RocketUsersAPI, ActionLinkPrep, ActionLinkBuilder, ActionParameters
+from Utility.networks import RocketSetting, RocketUsersAPI, ActionLinkPrep, ActionLinkBuilder, ActionParameters
 from .default_data.rocket_data import RCLoginDataDefault
 from user.default_data.rocket_data import RocketUserData
 from Utility.default_data.rocket_data import RCAPI
