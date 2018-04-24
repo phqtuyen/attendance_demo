@@ -11,7 +11,6 @@ from Utility.default_data.rocket_data import *
 from feedback.models import FeedbackSession, StudentFeedback
 from django.utils import timezone
 from urllib.parse import parse_qs
-from feedback.models import StudentFeedbackManager
 from django.views.decorators.clickjacking import xframe_options_exempt
 from user.default_data.rocket_data import RocketUserData
 from feedback.feedback_default_data.feedback_data import FeedbackData
@@ -49,7 +48,7 @@ class ActionLinkView:
         act_params = self.prepare_action_params(params)
         return ActionLinkBuilder(act_links = act_links,
                                                         act_params = act_params).buildObject()
-
+        
 class AppController(AbstractControllers):
     CHOICE_MAP = {ActionLinkView.HAPPY : 2,
                             ActionLinkView.SAD : 0,
@@ -130,6 +129,7 @@ class GeneralView:
         context.update({RocketUserData.MESSAGE_ID: params.get(RocketUserData.MESSAGE_ID) or ''})
 
         context.update({FeedbackData.CONFIRM_SUBMIT_URL: self.app_controller.url_to_confirm_submit(request)})
+        context.update({'channel': params.get('channel')})
         response = render(request, self.view_path + 'further_comment.html', context)
         return response
 
@@ -138,14 +138,15 @@ class GeneralView:
         context = {}
         session_id = params.get(FeedbackData.FEEDBACK_ID)
         if session_id:
+            session = FeedbackSession.objects.get_session_by_id(session_id)
             if FeedbackSession.objects.has_session_with_id(FeedbackSession, session_id)\
                 and StudentFeedback.objects.has_submissions(session_id):
                 context.update({FeedbackData.HAS_SUBMISSIONS: True})
                 choice_stat = self.app_controller.aggregate_feedback(session_id)
-                context.update({FeedbackData.CHOICE_STAT: choice_stat})
+                # context.update({FeedbackData.CHOICE_STAT: choice_stat})
             else:
                 context[FeedbackData.HAS_SUBMISSIONS] = False
-            return (session_id, render(request, self.view_path + 'view.html', context))
+            return (session, render(request, self.view_path + 'view.html', context))
         else:
             print('Invalid feedback session id.')
 
@@ -161,7 +162,8 @@ class GeneralView:
             submission = StudentFeedback.objects.create_student_feedback(feedback_session,
                                                                             user_profile)
             comment = localParams.get(FeedbackData.COMMENT)
-            choice = localParams.get(FeedbackData.CHOICE)
-            return (True, HttpResponse('Successful Submission'))
+            choice = AppController.CHOICE_MAP.get(localParams.get(FeedbackData.CHOICE))
+            submission.set_choice(choice).set_comment(comment)
+            return (True, HttpResponse('Submission success.'))
         else:
             return (False, HttpResponse('You can only make submission once.'))

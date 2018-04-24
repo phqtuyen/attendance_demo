@@ -8,22 +8,22 @@ from Utility.rc_api_interaction import APIFunctions
 from Utility.default_data.rocket_data import RCAPI
 from Utility.networks import RocketUsersAPI, ActionLinkPrep, ActionLinkBuilder, ActionParameters
 from feedback.views import AppController, GeneralView, ActionLinkView
-from feedback.models import FeedbackSession
+from feedback.models import FeedbackSession, StudentFeedback
 from user.default_data.rocket_data import RocketUserData
 from feedback.feedback_default_data.feedback_data import FeedbackData
 import htmlmin
 
 class FeedbackAPIView(APIFunctions):
-	path = '/feedback_app'
-	confirm_create_feedback = '/confirm_create_feedback'
-	confirm_submit = '/confirm_submit'
-	FURTHER_COMMENT = '/further_comment'
+    path = '/feedback_app'
+    confirm_create_feedback = '/confirm_create_feedback'
+    confirm_submit = '/confirm_submit'
+    FURTHER_COMMENT = '/further_comment'
 
-	def __init__(self):
-		APIFunctions.__init__(self,FeedbackAPIView.path)
-		self.app_controller = AppController()
-		self.app_view = GeneralView()
-		self.act_link_view = ActionLinkView()
+    def __init__(self):
+        APIFunctions.__init__(self,FeedbackAPIView.path)
+        self.app_controller = AppController()
+        self.app_view = GeneralView()
+        self.act_link_view = ActionLinkView()
 
 	def confirm_create_feedback(self, request):
 		params = request.GET
@@ -82,19 +82,23 @@ class FeedbackAPIView(APIFunctions):
 
 		rocket_setting = self.authenticate(localParams)
 		if rocket_setting:
-			to_user_response = self.app_view.confirm_submit(request)
-			if to_user_response[0]:
-				rc_api = RocketUsersAPI(rocket_setting)
-
+        	rc_api = RocketUsersAPI(rocket_setting)
+            submission_attempt = self.app_view.confirm_submit(request)
+            to_user_response = self.format_html(submission_attempt[1])
+            channel = params.get('channel')
+            to_user_api_res = rc_api.post_message(channel = channel, text = to_user_response)
+            if submission_attempt[0]:
 				choice = localParams.get(FeedbackData.CHOICE)
-
 				submit_message = 'You chose: ' + choice
 				delete_result = rc_api.delete_message(localParams.get(RocketUserData.CHANNEL), localParams.get(RocketUserData.MESSAGE_ID))
 				post_result = rc_api.post_message(localParams.get(RocketUserData.CHANNEL), submit_message)
 
-				print('delete_result: ', delete_result)
-				print('post_result: ', post_result)
-			return to_user_response[1]
+				updated_admin_view = self.app_view.view_feedback(request, params)
+                if updated_admin_view[0]:
+                    to_admin_response = self.format_html(updated_admin_view[1])
+
+                    res = rc_api.update_message(updated_admin_view[0].roomid,
+                                                                    updated_admin_view[0].messageid,
+                                                                    to_admin_response)
+
 		return HttpResponse('Successful call.')
-
-
