@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from attendance_app.models import UserProfile, QuizSession, QuizSessionManager, StudentSubmission, StudentSubmissionManager
 from django.utils import timezone
 
@@ -70,8 +71,12 @@ class StudentFeedbackManager(StudentSubmissionManager):
         if submission_list:
             return len(submission_list) > 0
         else:
-            return False    
+            return False  
 
+    def get_comments(self, feedback_session_id):
+        submission_list = self.filter(Q(feedback_session__id__exact = feedback_session_id), ~Q(student_comment = ''))
+        return [(submission.student_choice, submission.student_comment)\
+                 for submission in submission_list]
             
 class StudentFeedback(StudentSubmission):
     #CHOICE_LIST = ((0, 'SAD'), (1, 'NEUTRAL'), (2, 'HAPPY'))
