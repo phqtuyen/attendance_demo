@@ -1,0 +1,12 @@
+class FeedbackData:
+	FEEDBACK_ID = 'feedback_id'
+	URL = 'url'
+	METHOD = 'method'
+	QUESTION = 'question'
+	HAS_QUESTION = 'has_quesiton'
+	CHOICE = 'choice'
+	CONFIRM_SUBMIT_URL = 'confirm_submit_url'
+	HAS_SUBMISSIONS = 'has_submissions'
+	CHOICE_STAT = 'choice_stat'
+	COMMENT = 'comment'
+	TOTAL = 'total'

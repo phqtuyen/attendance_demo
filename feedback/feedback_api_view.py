@@ -8,6 +8,8 @@ from Utility.rc_api_interaction import APIFunctions
 from Utility.networks import RocketUsersAPI, ActionLinkPrep, ActionLinkBuilder, ActionParameters
 from feedback.views import AppController, GeneralView, ActionLinkView
 from feedback.models import FeedbackSession
+from user.default_data.rocket_data import RocketUserData
+from feedback.feedback_default_data.feedback_data import FeedbackData
 import htmlmin
 
 class FeedbackAPIView(APIFunctions):
@@ -24,7 +26,7 @@ class FeedbackAPIView(APIFunctions):
 
 	def confirm_create_feedback(self, request):
 		params = request.GET
-		admin_username = params.get('username')
+		admin_username = params.get(RocketUserData.USERNAME)
 		rocket_setting = self.authenticate(params)
 		if rocket_setting:
 			rc_api = RocketUsersAPI(rocket_setting)
@@ -38,16 +40,16 @@ class FeedbackAPIView(APIFunctions):
 					feedback_id = to_user_response[0]
 					to_user_html = self.format_html(to_user_response[1])
 					temp_params = params.copy()
-					temp_params.update({'admin_username': admin_username})
-					temp_params.update({'feedback_id': feedback_id, 'method': 'get'})
-					temp_params.update({'url': self.build_URL(request) 
+					temp_params.update({RocketUserData.ADMIN_USERNAME: admin_username})
+					temp_params.update({FeedbackData.FEEDBACK_ID: feedback_id, FeedbackData.METHOD: 'get'})
+					temp_params.update({FeedbackData.URL: self.build_URL(request) 
 												+ FeedbackAPIView.FURTHER_COMMENT})
 					act_link_obj = self.act_link_view.prepare_act_link_obj(temp_params)
 					to_user_api_res = rc_api.post_message(text = to_user_html,
 															channel = users,
 															opt = act_link_obj)
 					temp_params = dict(params)
-					temp_params.update({'feedback_id': feedback_id})
+					temp_params.update({FeedbackData.FEEDBACK_ID: feedback_id})
 					to_admin_respose = self.app_view.view_feedback(request, temp_params)
 					to_admin_html = self.format_html(to_admin_respose[1])
 					to_admin_api_res = rc_api.post_message(text = to_admin_html,
