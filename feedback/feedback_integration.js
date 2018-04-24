@@ -21,7 +21,9 @@
           let user_name = request.data.user_name
           
           u = u + '&username=' + request.data.user_name + '&role=' + request.data.roles
-              + '&name=' + request.data.name + '&email=' + request.data.emails;
+              + '&name=' + request.data.name + '&email=' + request.data.emails
+              + '&question=' + extractQuestion(request.data.text).trim();
+
           return {
             url: u,
             headers: request.headers,
@@ -33,11 +35,6 @@
       process_outgoing_response({ request, response }) {
         var text = ["asd", "asb"];
 
-        return {
-          content: {
-            text: '',
-            parseUrls: false
-          }
-        };
+        return null;
       }
     }
