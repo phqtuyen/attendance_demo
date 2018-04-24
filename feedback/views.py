@@ -168,7 +168,7 @@ class GeneralView:
         print("params to confirm submit: ", params)
         feedback_session = FeedbackSession.objects.get_session_by_id(params.get('feedback_id'))
         localParams = params.dict()
-        localParams.update({'source': 'http://localhost:3000/'})
+        localParams.update({'source': feedback_session.source})
         user_profile = self.app_controller.createUserProfileIfNeeded(localParams)
         print("user_profile: ", user_profile)
 
