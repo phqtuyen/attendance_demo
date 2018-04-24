@@ -156,6 +156,7 @@ class GeneralView:
                 choice_stat = self.app_controller.aggregate_feedback(session_id)
                 context.update({FeedbackData.CHOICE: choice_stat})
                 context.update({FeedbackData.COMMENTS: self.app_controller.get_list_comments(session_id)})
+                print('context for view: ', context)
             else:
                 context[FeedbackData.HAS_SUBMISSIONS] = False
             return (session, render(request, self.view_path + 'view.html', context))

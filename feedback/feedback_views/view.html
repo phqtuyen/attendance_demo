@@ -2,7 +2,7 @@
 {% if has_submissions %}
 	<ul>
 		<p> There are total {{total}} feedback(s)</p>	
-		{% for choice, num in choices.items %}	
+		{% for choice, num in choice.items %}	
 			<li> {{choice}}: {{num}}.</li>
 		{% endfor %}	
 	</ul>

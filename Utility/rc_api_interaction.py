@@ -66,4 +66,6 @@ class APIFunctions:
                                                                                                 login_result.get_auth_token())
             else :
                 rocket_setting = None
+        print('uid ',rocket_setting.user_id)
+        print('auth_token ',rocket_setting.auth_token)        
         return rocket_setting
