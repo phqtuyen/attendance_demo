@@ -157,7 +157,7 @@ class GeneralView:
                                                                             user_profile)
             comment = localParams.get(FeedbackData.COMMENT)
             choice = localParams.get(FeedbackData.CHOICE)
-
+            submission.
             return HttpResponse('Submission success.')
         else:
             return HttpResponse('You can only make submission once.')
