@@ -96,4 +96,4 @@ class FeedbackAPIView(APIFunctions):
 	                                                                to_admin_response)
 	                print('finish update message: ', res)
 
-	        return HttpResponse('Successful call.')
+	        return submission_attempt[1]

@@ -20,7 +20,7 @@ class ModelTestCase(TestCase):
     def setUp(self):
     	self.tempProfile = UserProfile()
     	self.tempProfile.configID("a", "localhost")	\
-    		.configName("first", "last")	\
+    		.configName("name")	\
     		.configEmail("email@gmail.com", "teacher")	\
 
     def test_temp_profile(self):
@@ -94,6 +94,7 @@ class ViewTestCase(TestCase):
         resp_submit = self.client.post(self.URL + self.app_view.confirmCreateAttendancePath, {'username' : 'username', 'chat_url' : 'url'})
         res_data = self.student_data.copy()
         res_data['confirm_ans'] = 2
+        print('resp submit ',resp_submit.context)
         res_data['attendance_id'] = resp_submit.context.get('attendance_id')
         resp_submit_result = self.client.post(self.URL + self.app_view.confirmSubmitPath, res_data)
         self.assertEqual(resp_submit_result.status_code, 200)     
