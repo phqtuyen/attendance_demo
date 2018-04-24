@@ -16,6 +16,7 @@ class UserProfileManager(models.Manager):
             userProfile.configFromProfile(tempProfile)
             userProfile.save()
         return userProfile    
+
     
     def hasUserProfile(self, username, chat_url):
         try:
@@ -92,6 +93,13 @@ class QuizSessionManager(models.Manager):
         attendance.init_empty_fields()
         return attendance.id
 
+    def create_quiz_session(self, created_by, created_on, source):
+        quiz_session = self.create(created_by = created_by,
+                                    created_on = created_on,
+                                    source = source)
+        quiz_session.init_empty_fields()
+        return quiz_session.id
+
     def has_session_with_id(self, table_class, session_id):
         result = table_class.objects.filter(id__exact = session_id)
         return len(result) > 0
@@ -165,7 +173,7 @@ class QuizSession(models.Model):
     def init_empty_fields(self):
         self.messageid = ""
         self.roomid = ""
-        self.source = ""
+        # self.source = ""
         self.save()
         return self
 
