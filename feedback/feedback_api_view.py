@@ -71,11 +71,28 @@ class FeedbackAPIView(APIFunctions):
 				print(response)
 		return HttpResponse('Successful call.')		
 
+	@xframe_options_exempt
 	def confirm_submit(self, request):
+		print('confirm_submit')
 		params = request.POST
-		rocket_setting = self.authenticate(params)
+
+		feedback_session = FeedbackSession.objects.get_session_by_id(params.get(FeedbackData.FEEDBACK_ID))
+		localParams = params.dict()
+		localParams.update({'source': feedback_session.source})
+
+		rocket_setting = self.authenticate(localParams)
 		if rocket_setting:
-			to_user_response = self.format_html(self.app_view.confirm_submit(request))
-			
+			to_user_response = self.app_view.confirm_submit(request)
+			if to_user_response[0]:
+				rc_api = RocketUsersAPI(rocket_setting)
+
+				choice = localParams.get(FeedbackData.CHOICE)
+
+				submit_message = 'You chose: ' + choice
+				update_result = rc_api.update_message(localParams.get(RocketUserData.CHANNEL), localParams.get(RocketUserData.MESSAGE_ID), submit_message)
+
+				print('update_result: ', update_result)
+			return to_user_response[1]
+		return HttpResponse('Successful call.')
 
 
