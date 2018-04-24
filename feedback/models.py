@@ -1,5 +1,6 @@
 from django.db import models
 from attendance_app.models import UserProfile, QuizSession, QuizSessionManager, StudentSubmission, StudentSubmissionManager
+from django.utils import timezone
 
 MAX_NUM_CHOICES = 3
 DEFAULT_COMMENT = ''
