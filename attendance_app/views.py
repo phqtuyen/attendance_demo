@@ -5,7 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework import viewsets
 from django.http import JsonResponse
 
-from attendance_app.models import UserProfile, Attendance, AttendanceSubmit
+from attendance_app.models import Attendance, AttendanceSubmit
+from user.models import UserProfile
 from django.utils import timezone
 from attendance_app.default_data.rocket_data import RCRole, RCActionLink
 from urllib.parse import parse_qs
