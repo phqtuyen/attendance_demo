@@ -5,6 +5,7 @@ from django.template import loader, RequestContext
 from django.contrib.auth.models import User, Group
 from .views import *
 from Utility.rc_api_interaction import APIFunctions
+from Utility.default_data.rocket_data import RCAPI
 from Utility.networks import RocketUsersAPI, ActionLinkPrep, ActionLinkBuilder, ActionParameters
 from feedback.views import AppController, GeneralView, ActionLinkView
 from feedback.models import FeedbackSession
@@ -44,7 +45,12 @@ class FeedbackAPIView(APIFunctions):
 					temp_params.update({FeedbackData.FEEDBACK_ID: feedback_id, FeedbackData.METHOD: 'get'})
 					temp_params.update({FeedbackData.URL: self.build_URL(request) 
 												+ FeedbackAPIView.FURTHER_COMMENT})
+					temp_params.update({RCAPI.CLIENT_SERVER: RCAPI.CLIENT_ONLY})
+					print('confirm_create_feedback: ', temp_params);
 					act_link_obj = self.act_link_view.prepare_act_link_obj(temp_params)
+
+					print('act_link_obj: ', act_link_obj);
+
 					to_user_api_res = rc_api.post_message(text = to_user_html,
 															channel = users,
 															opt = act_link_obj)

@@ -36,7 +36,8 @@ class ActionLinkView:
         return {RocketUserData.SOURCE: params.get(RocketUserData.SOURCE),
                         RocketUserData.USERNAME: '',
                         RocketUserData.ADMIN_USERNAME: params.get(RocketUserData.ADMIN_USERNAME),
-                        FeedbackData.FEEDBACK_ID: params.get(FeedbackData.FEEDBACK_ID)}
+                        FeedbackData.FEEDBACK_ID: params.get(FeedbackData.FEEDBACK_ID), 
+                        RCAPI.CLIENT_SERVER: RCAPI.CLIENT_ONLY}
 
     def prepare_action_params(self, params):
         act_params = ActionParameters(params.get(FeedbackData.URL), params.get(FeedbackData.METHOD))
