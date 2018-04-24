@@ -70,7 +70,7 @@ class AppController(AbstractControllers):
             return None
 
     def url_to_confirm_submit(self, request):
-        return request.scheme + "://" + request.get_host() + "/" + FEEDBACK_APP\
+        return request.scheme + "://" + request.get_host() + "/" + AppController.FEEDBACK_APP\
                              + GeneralView.CONFIRM_SUBMIT
 
     def aggregate_feedback(self, session_id):
