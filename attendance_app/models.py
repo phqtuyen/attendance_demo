@@ -31,10 +31,7 @@ class UserProfileManager(models.Manager):
 
     def hasUserWithRole(self, username, chat_url, role):
         user = self.hasUserProfile(username, chat_url)
-        print ("check user with role: ")
-        print ("user role: ", user.role, "to check role: ", role)
         if (user):
-            print ('check role result: ', user.role == role)
             if (user.role == role):
                 return user
             else:

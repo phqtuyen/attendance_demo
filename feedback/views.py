@@ -118,7 +118,6 @@ class GeneralView:
     def further_comment(self, request):
         params = request.GET
         choice = self.app_controller.get_choice(params)
-        my_choice = "my choice: " + choice
         context = {}
         context.update({'choice': choice or ''})
         context.update({'username': params.get('username') or ''})
