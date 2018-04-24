@@ -117,7 +117,7 @@ class QuizSessionManager(models.Manager):
 
     def set_message_id(self, attendance_id, message_id):   
         attendance = self.getAttendanceByID(attendance_id)
-        print ('attendance to be update', attendance)
+        # print ('attendance to be update', attendance)
         if (attendance != None):
             attendance.messageid = message_id
             attendance.save()
@@ -125,7 +125,7 @@ class QuizSessionManager(models.Manager):
 
     def set_room_id(self, attendance_id, room_id):   
         attendance = self.getAttendanceByID(attendance_id)
-        print('attendance to be update: ', attendance)
+        # print('attendance to be update: ', attendance)
         if (attendance != None):
             attendance.roomid = room_id
             attendance.save()

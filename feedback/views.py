@@ -53,6 +53,9 @@ class AppController(AbstractControllers):
     CHOICE_MAP = {ActionLinkView.HAPPY : 2,
                             ActionLinkView.SAD : 0,
                             ActionLinkView.NEUTRAL: 1}
+    REVERSE_CHOICE_MAP = {0 : ActionLinkView.SAD,
+                            1: ActionLinkView.NEUTRAL,
+                            2: ActionLinkView.HAPPY}                        
     FEEDBACK_APP = 'feedback_app/'                        
 
     def __init__(self):
@@ -73,9 +76,16 @@ class AppController(AbstractControllers):
         return request.scheme + "://" + request.get_host() + "/" + AppController.FEEDBACK_APP\
                              + GeneralView.CONFIRM_SUBMIT
 
+    def get_total_comments(self, session_id):
+        return {FeedbackData.TOTAL: StudentFeedback.objects.calc_total(session_id)}                  
+                         
+    def get_list_comments(self, session_id):
+        temp = StudentFeedback.objects.get_comments(session_id)
+        return [(AppController.REVERSE_CHOICE_MAP.get(first), second)\
+                 for (first, second) in temp]
+                             
     def aggregate_feedback(self, session_id):
         choice_stat = {}
-        choice_stat.update({FeedbackData.TOTAL: StudentFeedback.objects.calc_total(session_id)})
         for choice, value in AppController.CHOICE_MAP.items():
             num = StudentFeedback.objects.calc_num_choice(value, session_id)
             choice_stat.update({choice: num})
@@ -142,8 +152,10 @@ class GeneralView:
             if FeedbackSession.objects.has_session_with_id(FeedbackSession, session_id)\
                 and StudentFeedback.objects.has_submissions(session_id):
                 context.update({FeedbackData.HAS_SUBMISSIONS: True})
+                context.update(self.app_controller.get_total_comments(session_id))
                 choice_stat = self.app_controller.aggregate_feedback(session_id)
-                # context.update({FeedbackData.CHOICE_STAT: choice_stat})
+                context.update({'choices': choice_stat})
+                context.update({'comments': self.app_controller.get_list_comments(session_id)})
             else:
                 context[FeedbackData.HAS_SUBMISSIONS] = False
             return (session, render(request, self.view_path + 'view.html', context))
