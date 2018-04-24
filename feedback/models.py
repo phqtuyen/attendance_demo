@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Q
-from attendance_app.models import UserProfile, QuizSession, QuizSessionManager, StudentSubmission, StudentSubmissionManager
+from attendance_app.models import QuizSession, QuizSessionManager, StudentSubmission, StudentSubmissionManager
+from user.models import UserProfile
 from django.utils import timezone
 
 MAX_NUM_CHOICES = 3

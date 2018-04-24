@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import render
 from django.http import HttpResponse,  HttpResponseServerError
 from django.template import loader, RequestContext
-from attendance_app.models import UserProfile
+from user.models import UserProfile
 from Utility.default_data.rocket_data import RCRole
 
 # Create your views here.

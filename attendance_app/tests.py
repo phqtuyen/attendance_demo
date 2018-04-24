@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 from rest_framework import status
 #from django.core.urlresolvers import reverse
 from attendance_app.views import AppViews
-from attendance_app.models import UserProfile, Attendance, AttendanceSubmit
+from user.models import UserProfile, Attendance, AttendanceSubmit
 from Utility.networks import RocketUsersAPI
 from Utility.networks import RocketSettingSandBox
 

@@ -1,7 +1,7 @@
 
 from Utility.networks import *
 from Utility.default_data.rocket_data import *
-from attendance_app.models import RocketAPIAuthentication
+from Utility.models import RocketAPIAuthentication
 import htmlmin
 
 class APIFunctions:
