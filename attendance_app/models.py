@@ -117,6 +117,7 @@ class QuizSessionManager(models.Manager):
 
     def set_message_id(self, attendance_id, message_id):   
         attendance = self.getAttendanceByID(attendance_id)
+        print ('attendance to be update', attendance)
         if (attendance != None):
             attendance.messageid = message_id
             attendance.save()
@@ -124,6 +125,7 @@ class QuizSessionManager(models.Manager):
 
     def set_room_id(self, attendance_id, room_id):   
         attendance = self.getAttendanceByID(attendance_id)
+        print('attendance to be update: ', attendance)
         if (attendance != None):
             attendance.roomid = room_id
             attendance.save()
@@ -131,7 +133,7 @@ class QuizSessionManager(models.Manager):
 
     def getAttendanceByID(self, attendanceID):
         try:
-            attendance = Attendance.objects.get(id__exact = attendanceID)
+            attendance = self.get(id__exact = attendanceID)
             return attendance
         except MultipleObjectsReturned:
             print ("More than one objects with the same username and chat_url.")
@@ -188,6 +190,13 @@ class QuizSession(models.Model):
         self.messageid = message_id
         self.save()
         return self
+
+    def __str__(self):
+        return 'id: ' + str(self.id)\
+                + ' created_by: ' + self.created_by.username\
+                + ' source: ' + self.source\
+                + ' messageid: ' + self.messageid\
+                + ' roomid: ' + self.roomid + str("\n")
 
 class Attendance(QuizSession):
 
