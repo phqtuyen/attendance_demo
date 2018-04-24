@@ -15,6 +15,8 @@ from .views import *
 import htmlmin
 from .networks import RocketSetting, RocketUsersAPI, ActionLinkPrep, ActionLinkBuilder, ActionParameters
 from .default_data.rocket_data import RCLoginDataDefault
+from user.default_data.rocket_data import RocketUserData
+from Utility.default_data.rocket_data import RCAPI
 from attendance_app.models import RocketAPIAuthentication, Attendance
 import random
 # viewsets: create, edit, delete, post, get, list
@@ -106,7 +108,7 @@ class APIViews:
                 act_params = ActionParameters(self.buildURL(request) + APIViews.confirm_create_attendance, "post")
                 source = request.GET.get('source')
                 act_params.config_optional({'source': source, 'username': instructor.username})
-                act_params.config_optional({ActionParameters.DELETE_AFTER_SUCCESS: True})
+                act_params.config_optional({RCAPI.CLIENT_SERVER: RCAPI.SERVER_ONLY})
                 params = act_params.buildActionParameters()
 
                 act_link_obj = ActionLinkBuilder(act_links = [submit_link],
@@ -152,8 +154,9 @@ class APIViews:
                                                                                                     'instructor_username': instructor_username,
                                                                                                     'answer': str(correct_answer),
                                                                                                     'attendance_id': res[0]})
-                    act_params = act_params.config_optional({ActionParameters.DELETE_AFTER_SUCCESS: True})\
-                                                                    .buildActionParameters()
+                    act_params.config_optional({RCAPI.CLIENT_SERVER: RCAPI.SERVER_ONLY})
+
+                    act_params = act_params.buildActionParameters()
 
                     act_link_obj = ActionLinkBuilder(act_links = answer_links,
                                                                                     act_params = act_params).buildObject()

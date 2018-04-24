@@ -28,6 +28,9 @@ class RCAPI:
 	GET_USER_INFO = 'users.info'
 	LOGIN = 'login'
 	UPDATE_MESSAGE = 'chat.update'	
+	CLIENT_SERVER = 'client_server'
+	CLIENT_ONLY = 'client'
+	SERVER_ONLY = 'server'
 
 
 
