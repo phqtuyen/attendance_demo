@@ -158,7 +158,6 @@ class APIViews:
                     act_link_obj = ActionLinkBuilder(act_links = answer_links,
                                                                                     act_params = act_params).buildObject()
                     responses = rc_api.post_message(text = res_html_student, channel = channels, opt = act_link_obj)
-                    print('Users sent to: ', channels)
 
                     res_html_instructor = self.format_html(self.app_view.viewAttendance(request, {'attendance_id' : res[0], 'answer': str(correct_answer)})[1])
                     instructor_channel = [user._id for user in users if user.username == instructor_username]

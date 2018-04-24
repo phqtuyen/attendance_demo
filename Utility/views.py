@@ -34,10 +34,7 @@ class AbstractControllers:
     def isAdmin(self, params):
         username = params.get('username')
         source = params.get('source')
-        print('check is admin:')
-        print('username: ', username, 'source: ', source)
         admin = UserProfile.objects.hasUserWithRole(username,
                                                                                                 source,
                                                                                                 RCRole.ADMIN)
-        print('All users: ',UserProfile.objects.all())
         return admin

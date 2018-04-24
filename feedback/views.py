@@ -80,7 +80,6 @@ class AppController(AbstractControllers):
 
     def get_choice(self, params):
         query_str = params.get(RCActionLink.ACTION_PARAM)
-        print
         if query_str is not None:
             answer_dict = parse_qs(query_str)
             return answer_dict.get(RCActionLink.VALUE)[0]

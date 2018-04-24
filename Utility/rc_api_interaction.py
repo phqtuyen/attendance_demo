@@ -32,7 +32,6 @@ class APIFunctions:
 
     def authenticate(self, params):
         source = params.get('source')
-        print('params pass from feedback start: ', params)
         username = RCLoginDataDefault.USERNAME
         password = RCLoginDataDefault.PASSWORD
         api_authentication = RocketAPIAuthentication.objects.getRocketAPIAuth(source)
@@ -62,9 +61,7 @@ class APIFunctions:
             login_result = rocket_api.login(username, password)
             if (login_result.is_success()):
                 rocket_setting.user_id = login_result.get_uid()
-                print('login success id: ', login_result.get_uid())
                 rocket_setting.auth_token = login_result.get_auth_token()
-                print('login success auth token: ', login_result.get_auth_token())
                 RocketAPIAuthentication.objects.createRocketAPIAuth(source, login_result.get_uid(),
                                                                                                 login_result.get_auth_token())
             else :
