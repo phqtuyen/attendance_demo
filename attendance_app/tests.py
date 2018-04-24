@@ -78,31 +78,25 @@ class ViewTestCase(TestCase):
     def test_create_form(self):
         resp = self.client.post(self.URL, data = self.instructor_data)    
         self.assertEqual(resp.status_code,200)
-        #self.assertEqual(resp.context, )
         
     def test_submit_true(self):
         resp = self.client.post(self.URL, data = self.instructor_data)  
         resp1 = self.client.post(self.URL + self.app_view.confirmCreateAttendancePath, {'username' : 'username', 'chat_url' : 'url'})
         self.assertEqual(resp1.status_code,200)
-        #print(resp1.content)
 
     def test_submit_false(self):
-        print(self.URL + self.app_view.confirmCreateAttendancePath)
         resp1 = self.client.post(self.URL + self.app_view.confirmCreateAttendancePath, {'username' : 'u', 'chat_url' : 'u'})
-        #print(resp1.content)
         self.assertEqual(resp1.status_code,200)
            
 
     def test_submit_result_true(self):
         resp = self.client.post(self.URL, data = self.instructor_data)  
         resp_submit = self.client.post(self.URL + self.app_view.confirmCreateAttendancePath, {'username' : 'username', 'chat_url' : 'url'})
-        #print(resp_submit.content)
         res_data = self.student_data.copy()
         res_data['confirm_ans'] = 2
         res_data['attendance_id'] = resp_submit.context.get('attendance_id')
         resp_submit_result = self.client.post(self.URL + self.app_view.confirmSubmitPath, res_data)
         self.assertEqual(resp_submit_result.status_code, 200)     
-        #print(resp_submit_result.content)   
 
     def test_submit_result_false(self):
         resp = self.client.post(self.URL, data = self.instructor_data)  
@@ -112,14 +106,12 @@ class ViewTestCase(TestCase):
         res_data['attendance_id'] = 0
         resp_submit_result = self.client.post(self.URL + self.app_view.confirmSubmitPath, res_data)
         self.assertEqual(resp_submit_result.status_code, 200)  
-        #print(resp_submit_result.content)
 
     def test_view(self):
         resp = self.client.post(self.URL, data = self.instructor_data)  
         resp_submit = self.client.post(self.URL + self.app_view.confirmCreateAttendancePath, {'username' : 'username', 'chat_url' : 'url'})
-        #print(resp_submit)      
         res_view_no_submission = self.client.post(self.URL + self.app_view.viewAttendancePath, {'attendance_id' : resp_submit.context.get('attendance_id')})
-        print(res_view_no_submission.content)      
+
         self.assertEqual(res_view_no_submission.status_code, 200)
         res_data = self.student_data.copy()
         res_data['confirm_ans'] = 2
@@ -130,7 +122,6 @@ class ViewTestCase(TestCase):
         resp_submit_result1 = self.client.post(self.URL + self.app_view.confirmSubmitPath, res_data1)
         res_view_some_submissions = self.client.post(self.URL + self.app_view.viewAttendancePath, {'attendance_id' : resp_submit.context.get('attendance_id')})
         self.assertEqual(res_view_some_submissions.status_code, 200)
-        print(res_view_some_submissions.content)       
         res_view_wrong_id = self.client.post(self.URL + self.app_view.viewAttendancePath, {'attendance_id' : 0})
         self.assertEqual(res_view_wrong_id.status_code, 200)
 
@@ -164,22 +155,16 @@ class TestRocketUsersAPI(TestCase):
         self.assertNotEqual(res_obj.get_uid(), None)
         self.assertNotEqual(res_obj.get_auth_token(), None)
         self.assertEqual(res_obj.is_success(), True)
-        #print(r)
     
     def test_login_wrong_acc(self):
         res_obj = self.rc_user_api.login('username', 'password')
         err = res_obj.get_err()
         self.check_err_obj(err, res_obj)
 
-    # def test_login_wrong_server(self):
-
-
-
     def test_get_users(self):
         res_obj = self.rc_user_api.get_users()
         self.assertEqual(res_obj.is_success(), True)
         self.assertEqual(len(res_obj.get_users()) > 0, True)
-    #     #print(r)
 
     def test_get_users_faulty(self):
         print("====================")
@@ -198,7 +183,6 @@ class TestRocketUsersAPI(TestCase):
         r = self.rc_user_api.post_message(channel, text)
         self.assertNotEqual(r.get_msg, None)
         self.assertNotEqual(r.get_channel, "")
-        #print(r.json().get('message'))
 
     def test_post_message_wrong_acc(self):
         faulty_setting = RocketSet(auth_token='asdasd',user_id='wqeqwe')
