@@ -15,16 +15,16 @@ class AbstractControllers:
         if RCRole.ADMIN in st:
             return RCRole.ADMIN
         else:
-            return RCRole.USER	
+            return RCRole.USER
 
-	def userProfileFromRequest(self, params):
-		temp_profile = UserProfile()\
-						.configID(params.get('username'), params.get('source'))\
-						.configName(params.get('name'))\
-						.configEmail(params.get('email')),
-									self.get_role(params.get('role'))\
-						.configCreatedOn(None)
-		return temp_profile
+    def userProfileFromRequest(self, params):
+        temp_profile = UserProfile()\
+                                        .configID(params.get('username'), params.get('source'))\
+                                        .configName(params.get('name'))\
+                                        .configEmail(params.get('email'),
+                                        self.get_role(params.get('role')))\
+                                        .configCreatedOn(None)
+        return temp_profile
 
     def createUserProfileIfNeeded(self, params):
         temp_prof = self.userProfileFromRequest(params)
@@ -32,9 +32,9 @@ class AbstractControllers:
         return user_prof
 
     def isAdmin(self, params):
-    	username = params.get('username')
-    	source = params.get('source')
-    	admin = UserProfile.objects.hasUserWithRole(username,
-    												source,
-    												RCRole.ADMIN) 
-		
+        username = params.get('username')
+        source = params.get('source')
+        admin = UserProfile.objects.hasUserWithRole(username,
+                                                                                                source,
+                                                                                                RCRole.ADMIN)
+        return admin

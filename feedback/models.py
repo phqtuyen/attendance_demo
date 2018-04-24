@@ -1,5 +1,6 @@
 from django.db import models
 from attendance_app.models import UserProfile, QuizSession, QuizSessionManager, StudentSubmission, StudentSubmissionManager
+from django.utils import timezone
 
 MAX_NUM_CHOICES = 3
 DEFAULT_COMMENT = ''
@@ -42,7 +43,7 @@ class StudentFeedbackManager(StudentSubmissionManager):
 
     def get_feedback_list(self, feedback_session_id):
         try :
-            submissionList = self.filter(attendance__id__exact = feedback_session_id)
+            submissionList = self.filter(feedback_session__id__exact = feedback_session_id)
             if (not submissionList):
                 return None
             else:
@@ -64,7 +65,7 @@ class StudentFeedbackManager(StudentSubmissionManager):
                                                             feedback_session_id))
         return num_choice / total
 
-    def has_submissions(self, feedback_session_id):
+    def has_submissions(self, feedback_session_id): 
         submission_list = self.get_feedback_list(feedback_session_id)
         if submission_list:
             return len(submission_list) > 0
@@ -73,12 +74,21 @@ class StudentFeedbackManager(StudentSubmissionManager):
 
             
 class StudentFeedback(StudentSubmission):
-    CHOICE_LIST = range(0,MAX_NUM_CHOICES)
+    #CHOICE_LIST = ((0, 'SAD'), (1, 'NEUTRAL'), (2, 'HAPPY'))
     feedback_session = models.ForeignKey(FeedbackSession, 
                         on_delete = models.SET_NULL, null = True)
-    student_choice = models.IntegerField(max_length = 255, 
-                                        choices = CHOICE_LIST,
-                                        default = DEFAULT)
+    student_choice = models.IntegerField(default = DEFAULT)
     student_comment = models.CharField(max_length = 500)
     objects = StudentFeedbackManager()
 # Create your models here.
+
+    def set_choice(self, choice):
+        self.student_choice = choice
+        self.save()
+        return self
+
+    def set_comment(self, comment):
+        self.student_comment = comment
+        self.save()
+        return self
+

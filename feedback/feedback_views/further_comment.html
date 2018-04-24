@@ -1,0 +1,10 @@
+<p>{{choice}} is selected</p>
+<form action="{{confirm_submit_url}}" id="comment_form" method="post">
+	{% csrf_token %}
+	<input type="hidden" name="username" value={{username}}>
+	<input type="hidden" name="feedback_id" value={{feedback_id}}>
+	<input type="hidden" name="choice" value={{choice}}>
+	You can add any additional comments (optional)
+	<textarea rows="3" cols="50" name="comment" form="comment_form"></textarea>
+	<input type="submit" value="Submit">
+</form>	

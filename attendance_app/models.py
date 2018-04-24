@@ -16,6 +16,7 @@ class UserProfileManager(models.Manager):
             userProfile.configFromProfile(tempProfile)
             userProfile.save()
         return userProfile    
+
     
     def hasUserProfile(self, username, chat_url):
         try:
@@ -47,17 +48,17 @@ class UserProfile(models.Model):
     objects = UserProfileManager()
 
     def configID(self, username, chat_url):
-        self.username = username or ""
-        self.chat_url = chat_url or ""
+        self.username = (username or "").strip()
+        self.chat_url = (chat_url or "").strip()
         return self
 
     def configName(self, name):
-        self.name = name or ""
+        self.name = (name or "").strip()
         return self    
         
     def configEmail(self, email, role):
-        self.email = email or ""
-        self.role = role or ""
+        self.email = (email or "").strip()
+        self.role = (role or "").strip()
         return self
 
     def configCreatedOn(self, created_on):
@@ -76,7 +77,7 @@ class UserProfile(models.Model):
         return self
 
     def __str__(self):
-        return self.username + ' ' + self.name + ' ' + self.email
+        return self.username + ' ' + self.name + ' ' + self.email + ' ' + self.role
 
 class QuizSessionManager(models.Manager):
 
@@ -89,9 +90,16 @@ class QuizSessionManager(models.Manager):
         attendance.init_empty_fields()
         return attendance.id
 
+    def create_quiz_session(self, created_by, created_on, source):
+        quiz_session = self.create(created_by = created_by,
+                                    created_on = created_on,
+                                    source = source)
+        quiz_session.init_empty_fields()
+        return quiz_session.id
+
     def has_session_with_id(self, table_class, session_id):
         result = table_class.objects.filter(id__exact = session_id)
-        return len(result > 0)
+        return len(result) > 0
 
     def get_session_by_id(self, table_class, session_id):
         try:
@@ -132,6 +140,17 @@ class QuizSessionManager(models.Manager):
             print ("Object does not exist.")
             return None   
 
+    def get_session_by_id(self, session_id):
+        try:
+            session = self.get(id__exact = session_id)
+            return session
+        except MultipleObjectsReturned:
+            print ("More than one objects with the same id.")
+            return None
+        except ObjectDoesNotExist:
+            print ("Object does not exist.")
+            return None            
+
 class AttendanceManager(QuizSessionManager):
 
     class Meta:
@@ -141,6 +160,7 @@ class AttendanceManager(QuizSessionManager):
 class QuizSession(models.Model):
     created_by = models.ForeignKey(UserProfile, on_delete = models.SET_NULL, null = True)
     created_on = models.DateTimeField(auto_now_add = True)
+    source = models.CharField(max_length = 255, default = '')
     messageid = models.CharField(max_length = 255)
     roomid    = models.CharField(max_length = 255)
 
@@ -150,6 +170,22 @@ class QuizSession(models.Model):
     def init_empty_fields(self):
         self.messageid = ""
         self.roomid = ""
+        # self.source = ""
+        self.save()
+        return self
+
+    def set_room_id(self, room_id):
+        self.roomid = room_id
+        self.save()
+        return self
+
+    def set_source(self, source):
+        self.source = source
+        self.save()
+        return self
+        
+    def set_message_id(self, message_id):
+        self.messageid = message_id
         self.save()
         return self
 
@@ -158,7 +194,7 @@ class Attendance(QuizSession):
     objects = AttendanceManager()    
 
 
-class StudentSubmissionManager(models.Model):
+class StudentSubmissionManager(models.Manager):
     class Meta:
         abstract = True
 

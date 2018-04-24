@@ -15,6 +15,8 @@ class RCRole:
 
 #class ErrorMessage:
 
+
+
 class RCActionLink:
 	ACTION_PARAM = 'action_params'
 	VALUE = 'value'

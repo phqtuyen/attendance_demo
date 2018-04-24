@@ -11,6 +11,11 @@ class RocketSetting:
 	auth_token = ""
 	user_id = ""
 
+	def __str__(self):
+		return "url: " + RocketSetting.url + '\n' +\
+				"auth_token: " + RocketSetting.auth_token +\
+				"user_id: " + RocketSetting.user_id
+
 class RocketSettingKhang(RocketSetting):
 	url = "http://localhost:3000/api/v1/"
 	auth_token = ""
@@ -168,6 +173,7 @@ class RocketUsersAPI:
 		payload = {'channel' : channel, 'text' : text}
 		if opt is not None:
 			payload.update(opt) 	
+		
 		payload = json.dumps(payload)
 		post_message_url = self.url + RCAPI.POST_MESSAGE
 		response = requests.post(post_message_url, headers = headers, data = payload)
