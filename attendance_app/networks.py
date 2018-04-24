@@ -135,6 +135,39 @@ class RocketUsersAPI:
 					'X-User-Id' : self.user_id,
 					'Content-type'	:	'application/json'}	
 
+
+	def delete_message(self, rid, mid):
+		headers = self.headers()
+		payload = json.dumps({'roomId': rid, 'msgId': mid})
+		post_url = self.url + RCAPI.DELETE_MESSAGE	
+		response = requests.post(post_url, headers = headers, 
+								data = payload)
+		r = response.json()
+		obj = RCReturnObs(False)
+		if (RCErrDomain.is_rclogic_err(response.status_code)):
+			is_success = r.get('success')
+			msg = r.get('message')	
+			if (is_success and msg):
+				obj = RCUpdateMessReturn(is_success)
+				temp_mess = RCMessage(msg.get('_id'))
+				temp_user = RCUserData(msg.get('u').get('_id'))
+				temp_user.config_user(msg.get('u').get('username'),
+									msg.get('u').get('username'))
+				temp_mess.config(msg.get('msg'), temp_user).config_rid(msg.get('rid'))
+				obj.config_mess(temp_mess)
+			else :
+				err = RCReturnObsErr().config_domain(RCErrDomain.LOGIC_DOMAIN) \
+										.config_code(RCErrDomain.LOGIC_CODE) \
+										.config_msg(RCErrDomain.NULL_DATA)
+				obj.config_err(err)	
+				print("delete message error: ", err)
+		else:
+			err = self.config_err_obj(response)
+			obj.config_err(err)
+			print("delete message error: ", err)
+
+		return obj
+
 	def update_message(self, rid, mid, text):
 		headers = self.headers()
 		payload = json.dumps({'roomId': rid, 'msgId': mid, 'text': text})

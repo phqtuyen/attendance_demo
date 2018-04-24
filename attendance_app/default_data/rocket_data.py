@@ -26,6 +26,7 @@ class RCAPI:
 	GET_USER_INFO = 'users.info'
 	LOGIN = 'login'
 	UPDATE_MESSAGE = 'chat.update'	
+	DELETE_MESSAGE = 'chat.delete'	
 
 class Utility:
 	@staticmethod
