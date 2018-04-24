@@ -89,9 +89,11 @@ class FeedbackAPIView(APIFunctions):
 				choice = localParams.get(FeedbackData.CHOICE)
 
 				submit_message = 'You chose: ' + choice
-				update_result = rc_api.update_message(localParams.get(RocketUserData.CHANNEL), localParams.get(RocketUserData.MESSAGE_ID), submit_message)
+				delete_result = rc_api.delete_message(localParams.get(RocketUserData.CHANNEL), localParams.get(RocketUserData.MESSAGE_ID))
+				post_result = rc_api.post_message(localParams.get(RocketUserData.CHANNEL), submit_message)
 
-				print('update_result: ', update_result)
+				print('delete_result: ', delete_result)
+				print('post_result: ', post_result)
 			return to_user_response[1]
 		return HttpResponse('Successful call.')
 

@@ -130,10 +130,13 @@ class RocketUsersAPI:
 			obj.config_err(err)			
 		return obj
 
-	def update_message(self, rid, mid, text):
-		headers = {'X-Auth-Token' : self.auth_token, 
+	def headers(self):
+		return {'X-Auth-Token' : self.auth_token, 
 					'X-User-Id' : self.user_id,
 					'Content-type'	:	'application/json'}	
+
+	def update_message(self, rid, mid, text):
+		headers = self.headers()
 		payload = json.dumps({'roomId': rid, 'msgId': mid, 'text': text})
 		post_url = self.url + RCAPI.UPDATE_MESSAGE	
 		response = requests.post(post_url, headers = headers, 
@@ -162,9 +165,7 @@ class RocketUsersAPI:
 		return obj			
 
 	def post_message(self, channel, text, opt=None):
-		headers = {'X-Auth-Token' : self.auth_token, 
-					'X-User-Id' : self.user_id,
-					'Content-type'	:	'application/json'}			
+		headers = self.headers()		
 		payload = {'channel' : channel, 'text' : text}
 		if opt is not None:
 			payload.update(opt) 	
