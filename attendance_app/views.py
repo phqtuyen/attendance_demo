@@ -166,7 +166,7 @@ class AppViews:
             if verify_ans :
                 AttendanceSubmit.objects.verify_submission(submitted_by = tempProfile,
                                                                                         attendance = attendance)
-                return (True, HttpResponse('Submission success.'))
+                return (True, HttpResponse('Successful Attendance Submission.'))
             else :
                 return (False ,HttpResponse('Submission fail, please see the instructor.'))
         else :

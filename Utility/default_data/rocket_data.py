@@ -27,10 +27,12 @@ class RCAPI:
 	POST_MESSAGE = 'chat.postMessage'
 	GET_USER_INFO = 'users.info'
 	LOGIN = 'login'
-	UPDATE_MESSAGE = 'chat.update'	
+	UPDATE_MESSAGE = 'chat.update'
+	DELETE_MESSAGE = 'chat.delete'	
 	CLIENT_SERVER = 'client_server'
 	CLIENT_ONLY = 'client'
 	SERVER_ONLY = 'server'
+
 
 
 

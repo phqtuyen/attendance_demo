@@ -125,6 +125,10 @@ class GeneralView:
         context.update({FeedbackData.CHOICE: choice or ''})
         context.update({RocketUserData.USERNAME: params.get(RocketUserData.USERNAME) or ''})
         context.update({FeedbackData.FEEDBACK_ID: params.get(FeedbackData.FEEDBACK_ID) or ''})
+        
+        context.update({RocketUserData.CHANNEL: params.get(RocketUserData.CHANNEL) or ''})
+        context.update({RocketUserData.MESSAGE_ID: params.get(RocketUserData.MESSAGE_ID) or ''})
+
         context.update({FeedbackData.CONFIRM_SUBMIT_URL: self.app_controller.url_to_confirm_submit(request)})
         response = render(request, self.view_path + 'further_comment.html', context)
         return response
@@ -159,6 +163,6 @@ class GeneralView:
             comment = localParams.get(FeedbackData.COMMENT)
             choice = localParams.get(FeedbackData.CHOICE)
 
-            return HttpResponse('Submission success.')
+            return (True, HttpResponse('Successful Submission'))
         else:
-            return HttpResponse('You can only make submission once.')
+            return (False, HttpResponse('You can only make submission once.'))

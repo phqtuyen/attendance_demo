@@ -135,6 +135,9 @@ class APIViews:
                     channels = list(map(lambda user : user._id, users))
                     responses = rc_api.post_message(text = res_html, channel = instructor_username)
                 else:
+                    print("confirm create attendance params: ", params)
+                    response_delete = rc_api.delete_message(params.get(RocketUserData.CHANNEL), params.get(RocketUserData.MESSAGE_ID))
+
                     res_html_student = self.format_html(res[1])
                     channels = [user._id for user in users if user.username != instructor_username]
                     random_answers = random.sample(range(1, 11), 5)
@@ -180,6 +183,10 @@ class APIViews:
         rocket_setting = self.authenticate(params)
         if (rocket_setting):
             rc_api = RocketUsersAPI(rocket_setting)
+
+            print("confirmSubmit: ", params)
+            response_delete = rc_api.delete_message(params.get(RocketUserData.CHANNEL), params.get(RocketUserData.MESSAGE_ID))
+
             res = self.app_view.confirmSubmitAPI(request)
             res_html = self.format_html(res[1])
             channel = params.get('channel')

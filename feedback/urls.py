@@ -12,6 +12,6 @@ urlpatterns = [
 			name = 'confirm_create_feedback'),
 	path('further_comment', view.further_comment,
 			name = 'further_comment'),
-	path('confirm_submit', view.confirm_submit,
+	path('confirm_submit', api_view.confirm_submit,
 			name = 'confirm_submit')
 ]
