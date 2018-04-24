@@ -57,10 +57,12 @@ class AppController(AbstractControllers):
 
     def create_feedback_session(self, params):
         admin = self.isAdmin(params)
+        source = params.get('source') or ''
         print ('this is admin: ', admin)
         if admin:
-            feedback_id = FeedbackSession.objects.createAttendance(admin,
-                                                                                                                    timezone.now())
+            feedback_id = FeedbackSession.objects.create_quiz_session(admin,
+                                                                    timezone.now(),
+                                                                    source)
             print ('Create feedback_id successfully: ', feedback_id)
             return feedback_id
         else:
@@ -167,7 +169,6 @@ class GeneralView:
         feedback_session = FeedbackSession.objects.get_session_by_id(params.get('feedback_id'))
         localParams = params.dict()
         localParams.update({'source': 'http://localhost:3000/'})
-        
         user_profile = self.app_controller.createUserProfileIfNeeded(localParams)
         print("user_profile: ", user_profile)
 
