@@ -26,7 +26,6 @@ class FeedbackAPIView(APIFunctions):
 		params = request.GET
 		admin_username = params.get('username')
 		rocket_setting = self.authenticate(params)
-		print(rocket_setting)
 		if rocket_setting:
 			rc_api = RocketUsersAPI(rocket_setting)
 			response = rc_api.get_users()
@@ -47,8 +46,6 @@ class FeedbackAPIView(APIFunctions):
 					to_user_api_res = rc_api.post_message(text = to_user_html,
 															channel = users,
 															opt = act_link_obj)
-					print ('finish sent to students: ', to_user_api_res)
-					print ('convert querry dict to dic: ', dict(params))
 					temp_params = dict(params)
 					temp_params.update({'feedback_id': feedback_id})
 					to_admin_respose = self.app_view.view_feedback(request, temp_params)
