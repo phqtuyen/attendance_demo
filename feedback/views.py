@@ -83,10 +83,6 @@ class AppController(AbstractControllers):
         print
         if query_str is not None:
             answer_dict = parse_qs(query_str)
-            print('type of ans dict: ', type(answer_dict))
-            print('answer_dict value: ', type(answer_dict.get(RCActionLink.VALUE)))
-            print('type value ', type(answer_dict.get(RCActionLink.VALUE)[0]))
-            print('value: ', answer_dict.get(RCActionLink.VALUE)[0])
             return answer_dict.get(RCActionLink.VALUE)[0]
         else:
             print('go through this.')
@@ -169,16 +165,19 @@ class GeneralView:
         params = request.POST
         print("params to confirm submit: ", params)
         feedback_session = FeedbackSession.objects.get_session_by_id(params.get('feedback_id'))
-        tempParams = dict(params)
-        # tempParams.update({'source': feedback_session.})
-        user_profile = self.app_controller.createUserProfileIfNeeded(params)
-        submitted = StudentFeedback.student_submitted(submitted_by = user_profile,
+        localParams = params.dict()
+        localParams.update({'source': 'http://localhost:3000/'})
+        
+        user_profile = self.app_controller.createUserProfileIfNeeded(localParams)
+        print("user_profile: ", user_profile)
+
+        submitted = StudentFeedback.objects.student_submitted(submitted_by = user_profile,
                                                         feedback_session = feedback_session)
         if not submitted:
             submission = StudentFeedback.objects.create_student_feedback(feedback_session,
                                                                             user_profile)
-            comment = params.get('comment')
-            choice = params.get('choice')
+            comment = localParams.get('comment')
+            choice = localParams.get('choice')
 
             return HttpResponse('Submission success.')
         else:

@@ -50,17 +50,17 @@ class UserProfile(models.Model):
     objects = UserProfileManager()
 
     def configID(self, username, chat_url):
-        self.username = username or ""
-        self.chat_url = chat_url or ""
+        self.username = (username or "").strip()
+        self.chat_url = (chat_url or "").strip()
         return self
 
     def configName(self, name):
-        self.name = name or ""
+        self.name = (name or "").strip()
         return self    
         
     def configEmail(self, email, role):
-        self.email = email or ""
-        self.role = role or ""
+        self.email = (email or "").strip()
+        self.role = (role or "").strip()
         return self
 
     def configCreatedOn(self, created_on):

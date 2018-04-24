@@ -19,10 +19,10 @@ class AbstractControllers:
 
     def userProfileFromRequest(self, params):
         temp_profile = UserProfile()\
-                                        .configID(params.get('username').strip(), params.get('source').strip())\
-                                        .configName(params.get('name').strip())\
-                                        .configEmail(params.get('email').strip(),
-                                        self.get_role(params.get('role').strip()))\
+                                        .configID(params.get('username'), params.get('source'))\
+                                        .configName(params.get('name'))\
+                                        .configEmail(params.get('email'),
+                                        self.get_role(params.get('role')))\
                                         .configCreatedOn(None)
         return temp_profile
 
